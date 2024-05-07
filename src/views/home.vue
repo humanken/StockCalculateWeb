@@ -3,7 +3,7 @@
   <Navbar />
 
   <!-- 開頭畫面 -->
-  <section id="head" class="justify-content-center">
+  <section id="head" class="animation-bg justify-content-center">
     <h1 class="text-center" id="head-title">歡迎使用<br>股票試算系統</h1>
     <BtnHeaderSection :single-section-hash="idSingleSection" :all-section-hash="idAllSection"/>
   </section>
@@ -60,14 +60,16 @@
 
 /* <section id="head"> */
 #head {
-    background-image: linear-gradient(-225deg, #2CD8D5 0%, #C5C1FF 56%, #FFBAC3 100%);
-    background-size: 200% 200%;
-    background-position: center;
-    animation: bg-animate 8s ease-in-out infinite;
     height: 100vh;
     display: flex;
     align-items: center;
     position: relative;
+}
+.animation-bg {
+  background-image: linear-gradient(-225deg, #2CD8D5 0%, #C5C1FF 55%, #FFBAC3 100%);
+  background-size: 200% 200%;
+  background-position: center;
+  animation: bg-animate 8s ease-in-out infinite;
 }
 @keyframes bg-animate {
     0% {background-position: 0 0;}
