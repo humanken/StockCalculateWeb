@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar fixed-top navbar-expand-sm" id="header" :style="bgColor.style">
+  <nav class="navbar fixed-top navbar-expand-sm" :class="isNavbarNeedBg ? 'animation-bg' : ''" id="header">
     <div class="container-fluid">
       <!-- Logo -->
       <a class="navbar-brand btn text-center" href="/" id="a-logo">
@@ -13,17 +13,17 @@
       <!-- 會被放入 navbar-toggler 的內容 -->
       <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto mb-lg-0">
-              <li class="nav-item active">
-                  <a class="nav-link ms-3 me-3" href="#head" role="button">首頁</a>
+              <li class="nav-item">
+                  <a class="nav-link ms-3 me-3" :class="$route.hash == '#head'? 'active': ''" href="#head" role="button">首頁</a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link link-danger ms-3 me-3" href="#single-stock-section" role="button">單筆試算</a>
+                  <a class="nav-link link-danger ms-3 me-3" :class="$route.hash == '#single-stock-section'? 'active': ''" href="#single-stock-section" role="button">單筆試算</a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link link-danger ms-3 me-3" href="#all-stock-section" role="button">多筆試算</a>
+                  <a class="nav-link link-danger ms-3 me-3" :class="$route.hash == '#all-stock-section'? 'active': ''" href="#all-stock-section" role="button">多筆試算</a>
               </li>
               <li class="nav-item">
-                  <a class="nav-link link-dark ms-3 me-3" href="#introduce" role="button">系統介紹</a>
+                  <a class="nav-link link-dark ms-3 me-3" :class="$route.hash == '#introduce'? 'active': ''" href="#introduce" role="button">系統介紹</a>
               </li>
           </ul>
       </div>
@@ -32,10 +32,10 @@
 </template>
 
 <script setup>
-  import { onMounted, onUnmounted, reactive } from "vue";
+  import { onMounted, onUnmounted, ref } from "vue";
 
   let headerSectionPos = 0
-  const bgColor = reactive({'style': {'background-color': 'rgba(255, 255, 255, 0.2'}})
+  const isNavbarNeedBg = ref();
 
   onMounted(() => {
     const $headerSection = $('#head');
@@ -48,22 +48,18 @@
   })
 
   function handleScroll() {
-    if ($(this).scrollTop() >= headerSectionPos) {
-      bgColor.style = {
-        'background-image': 'linear-gradient(-225deg, #2CD8D5 0%, #C5C1FF 56%, #FFBAC3 100%)',
-        'background-size': '200% 200%',
-        'background-position': 'center',
-        'animation': 'bg-animate 8s ease-in-out infinite'
-      }
-    } else {
-      bgColor.style = {'background-color': 'rgba(255, 255, 255, 0.2'}
-    }
+    isNavbarNeedBg.value = $(this).scrollTop() >= headerSectionPos;
   }
 
 </script>
 
 <style scoped>
+
 #a-logo:hover {
+  color: white;
+}
+
+.navbar-nav .nav-link.active, .navbar-nav .show>.nav-link {
   color: white;
 }
 </style>
