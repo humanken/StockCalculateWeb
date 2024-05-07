@@ -14,7 +14,7 @@ cd dist
 
 git init
 git add -A
-git commit -m 'deploy'
+git commit -m "update `date +'%Y-%m-%d %H:%M:%S'`"
 
 # 部署到 https://<USERNAME>.github.io
 # git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
