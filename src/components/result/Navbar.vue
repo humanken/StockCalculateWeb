@@ -15,10 +15,7 @@
       <!-- 會被放入 navbar-toggler 的內容 -->
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto"><li class="nav-item"></li></ul>
-        <!-- 股利更新資料 日期 -->
-        <span class="navbar-text text-black-50 ms-2 me-2" id="update-dividend"></span>
-        <!-- 現價更新資料 時間 -->
-        <span class="navbar-text text-black-50 ms-2 me-2" id="update-price"></span>
+
       </div>
     </div>
   </nav>

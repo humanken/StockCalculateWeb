@@ -1,7 +1,31 @@
 <template>
 
   <!-- 標題欄 (導航欄) -->
-  <Navbar />
+  <Navbar
+      navbar-use-animate-bg="false"
+      brand-text="試算結果"
+      :contents-in-collapse="[
+        { colorClassName: 'link-success', href: '/', text: '返回 首頁' },
+        {
+          colorClassName: 'link-danger',
+          href: 'https://www.tdcc.com.tw/portal/zh/smWeb/qryStock',
+          title: '開啟集保戶股權分散表',
+          text: '查詢 大股東比例',
+          target: '_blank'
+        },
+        {
+          colorClassName: 'link-danger',
+          href: 'https://invest.wessiorfinance.com/stock.html',
+          title: '開啟存股試算',
+          text: '存股 試算',
+          target: '_blank'
+        }
+      ]"
+      :updates-in-collapse="[
+          { id: 'updateDividend', text: '2024-04-xx' },
+          { id: 'updatePrice', text: '22:00' }
+      ]"
+  />
 
   <!-- table 資料 -->
   <div class="result-table-wrapper">
@@ -12,8 +36,8 @@
 
 <script setup>
 
-  import Navbar from "@/components/result/Navbar.vue";
-  import { ref, onMounted, reactive } from "vue";
+  import Navbar from "@/components/Navbar.vue";
+  import { ref, onMounted } from "vue";
   import { ElLoading } from "element-plus";
   import TableResult from "@/components/result/ResultTable.vue";
 

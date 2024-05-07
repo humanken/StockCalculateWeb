@@ -32,24 +32,7 @@
 </template>
 
 <script setup>
-  import { onMounted, onUnmounted, ref } from "vue";
 
-  let headerSectionPos = 0
-  const isNavbarNeedBg = ref();
-
-  onMounted(() => {
-    const $headerSection = $('#head');
-    headerSectionPos = $headerSection.offset().top + $headerSection.outerHeight() - $('#header').outerHeight();
-    window.addEventListener('scroll', handleScroll);
-  })
-
-  onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll);
-  })
-
-  function handleScroll() {
-    isNavbarNeedBg.value = $(this).scrollTop() >= headerSectionPos;
-  }
 
 </script>
 

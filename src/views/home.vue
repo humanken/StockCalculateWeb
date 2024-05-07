@@ -1,6 +1,16 @@
 <template>
   <!-- 標題欄 (導航欄) -->
-  <Navbar />
+  <Navbar
+      :fixed-top="true"
+      :navbar-use-animate-bg="navbarUseAnimateBg"
+      brand-text="股票試算"
+      :contents-in-collapse="[
+        { href: '#head', text: '回頂部' },
+        { href: '#single-stock-section', text: '單筆試算' },
+        { href: '#all-stock-section', text: '多筆試算' },
+        { href: '#introduce', text: '暸解更多' },
+      ]"
+  />
 
   <!-- 開頭畫面 -->
   <section id="head" class="animation-bg justify-content-center">
@@ -42,8 +52,8 @@
 
 
 <script setup>
-  import { ref } from "vue";
-  import Navbar from "../components/home/navbar.vue";
+  import { onMounted, onUnmounted, ref } from "vue";
+  import Navbar from "../components/Navbar.vue";
   import BtnHeaderSection from "../components/home/HeaderSectionBtn.vue";
   import SelectSingleStock from "../components/home/SingleStockSelect.vue";
   import BtnCalculate from "../components/home/CalculateBtn.vue";
@@ -52,6 +62,23 @@
   const selectedStockNumber = ref()
   const idSingleSection = ref('single-stock-section')
   const idAllSection = ref('all-stock-section')
+
+  let headerSectionPos = 0
+  const navbarUseAnimateBg = ref(false);
+
+  onMounted(() => {
+    const $headerSection = $('#head');
+    headerSectionPos = $headerSection.offset().top + $headerSection.outerHeight() - $('#idNav').outerHeight();
+    window.addEventListener('scroll', handleScroll);
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll);
+  })
+
+  function handleScroll() {
+    navbarUseAnimateBg.value = $(this).scrollTop() >= headerSectionPos;
+  }
 
 </script>
 
@@ -65,17 +92,7 @@
     align-items: center;
     position: relative;
 }
-.animation-bg {
-  background-image: linear-gradient(-225deg, #2CD8D5 0%, #C5C1FF 55%, #FFBAC3 100%);
-  background-size: 200% 200%;
-  background-position: center;
-  animation: bg-animate 8s ease-in-out infinite;
-}
-@keyframes bg-animate {
-    0% {background-position: 0 0;}
-    50% {background-position: 100% 100%;}
-    100% {background-position: 0 0;}
-}
+
 
 #head-title {
     color: #fff;
