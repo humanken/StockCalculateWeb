@@ -2,7 +2,7 @@
   <nav class="navbar fixed-top navbar-expand-sm" :class="isNavbarNeedBg ? 'animation-bg' : ''" id="header">
     <div class="container-fluid">
       <!-- Logo -->
-      <a class="navbar-brand btn text-center" href="/" id="a-logo">
+      <a class="navbar-brand btn text-center" href="/public" id="a-logo">
           <img id="img-logo" src="@/assets/icon/Logo.png" alt="Logo" style="height: 1.5rem">
           股票試算系統
       </a>
