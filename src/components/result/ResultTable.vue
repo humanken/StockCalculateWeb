@@ -5,7 +5,7 @@
     <el-pagination
       v-model:current-page="state.currentPage"
       v-model:page-size="state.pageSize"
-      :total="copyCalculateResult.length"
+      :total="dataState.length"
       :page-sizes="[100, 200, 300, 400, 500, 1000]"
       :layout="state.layout"
     >
@@ -60,19 +60,24 @@
     endYield: { required: false, type: Number, default: 8 }
   })
 
-  const loadingEmit = defineEmits()
-  let calculateData = reactive([]);
+  const loadingEmit = defineEmits(['loadingEnd'])
 
   onMounted(async function () {
 
-    const data = await getDataByType();
-    // 加入資料到 calculateData／copyCalculateResult，除了沒有價格的資料
-    addDataExceptNoPrice(data)
+    if (props.type === 'table-single') {
+      calculateData.data = getSingleData()
+    }
+    else if (props.type === 'table-all') {
+      excludes.value = await getItem('excludes', [])
+      await getDataAndUpdateState();
+    }
 
     updateLayoutWithWidth();
     window.addEventListener('resize', updateLayoutWithWidth);
     // 觸發loading end，關閉Loading畫面
     loadingEmit('loadingEnd', true)
+    // 緩加載
+    startLazyLoadingData(6000);
   })
 
   onUnmounted(() => {
@@ -82,38 +87,65 @@
   const state = reactive({
     currentPage: 1, pageSize: 100, layout: 'sizes, prev, pager, next, jumper, total'
   })
-
-  // -------------------------------- Data ----------------------------------------
-  let copyCalculateResult = [];
   
-  async function getDataByType() {
-    if (props.type === 'table-single') {
-      const params = {
-        numbers: history.state.params.stockNumbers,
-        yieldStart: props.startYield,
-        yieldEnd: props.endYield
-      }
-      return await getCalculateResult(params)
-    }
-    else if (props.type === 'table-all') {
-      const excludes = await getItem('excludes', [])
-      const params = {
-        skip: 0, limit: 50,
-        excludes: excludes,
-        yieldStart: props.startYield,
-        yieldEnd: props.endYield
-      }
-      console.log('params: ', params)
-      return await getQueryCalculateResult(params)
-    }
+  const dataState = reactive({
+     nextOffset: 0, limit: 1000, length: 0
+  })
+  
+  function setDataState(response) {
+    dataState.nextOffset = response.nextOffset
+    dataState.limit = response.limit
+    dataState.length = calculateData.value.length
   }
 
-  function addDataExceptNoPrice(data) {
-    data.forEach(item => {
-      if (!item.stockPrice) { return }
-      calculateData.push(item)
-      copyCalculateResult.push(item);
-    })
+  // -------------------------------- Data ----------------------------------------
+  const excludes = ref([]);
+  const calculateData = ref([]);
+
+  async function getSingleData() {
+    const params = {
+      numbers: history.state.params.stockNumbers,
+      yieldStart: props.startYield,
+      yieldEnd: props.endYield
+    }
+    return await getCalculateResult(params)
+  }
+
+  async function getDataAndUpdateState(timer=undefined) {
+    if (timer && !dataState.nextOffset) { clearInterval(timer); return;}
+    const resp = await getResponseByQuery(dataState.nextOffset, excludes.value)
+    // 取得資料，去除沒有價格的資料
+    calculateData.value = [...calculateData.value, ...delDataWithoutPrice(resp.data)];
+    // 儲存資料狀態
+    setDataState(resp);
+  }
+
+  async function getResponseByQuery(offset = 0, excludes) {
+    const params = {
+      skip: offset, limit: dataState.limit,
+      excludes: excludes,
+      yieldStart: props.startYield,
+      yieldEnd: props.endYield
+    }
+    return await getQueryCalculateResult(params)
+  }
+  
+  function delDataWithoutPrice(data) {
+    // 反向遍歷，可避免迴圈中刪除元素的問題
+    for (let i = data.length - 1; i >= 0; i--) {
+      if (!data[i].stockPrice) {
+        data.splice(i, 1)
+      }
+    }
+    return data
+  }
+  
+  function startLazyLoadingData(millisecond) {
+    // 避免計時器重疊
+    let timer;
+    timer && clearInterval(timer);
+    // 立即執行函式，只要加上()
+    timer = setInterval(() => { getDataAndUpdateState(timer); }, millisecond)
   }
 
   // ------------------------------ Pagination -------------------------------------
@@ -123,34 +155,40 @@
   }
 
   // ---------------------------- Table Sortable -----------------------------------
+  let originData = [];
   function changeTableSort(column) {
     const field = column.prop
     const sortType = column.order
+    let sortData = calculateData.value
 
-    // 不排序，使用copy的資料恢復原本順序
+    // 儲存未排序的資料
+    if (originData === []) { originData = sortData.map(item => item); }
+
+    // 不排序，使用未排序的資料恢復原本順序
     if (!sortType) {
-      copyCalculateResult.forEach((item, i) => calculateData[i] = item);
+      calculateData.value = originData
       return
     }
 
     // string 轉成 float
     if (['averageYield', 'roi'].includes(field)) {
-      calculateData.map(item => {
+      sortData.map(item => {
         item[field] = item[field].replace('%', '')
       })
     }
 
     if (sortType === 'descending') {
-      calculateData = calculateData.sort((a, b) => b[field] - a[field])
+      sortData = sortData.sort((a, b) => b[field] - a[field])
     } else {
-      calculateData = calculateData.sort((a, b) => a[field] - b[field])
+      sortData = sortData.sort((a, b) => a[field] - b[field])
     }
 
     // float 轉成 string
     if (['averageYield', 'roi'].includes(field)) {
-      calculateData.map(item => { item[field] = `${item[field]}%` });
+      sortData.map(item => { item[field] = `${item[field]}%` });
     }
-    console.log('table data: ', calculateData)
+
+    calculateData.value = sortData
   }
 
   // ------------------------------ Cell Hover -------------------------------------
