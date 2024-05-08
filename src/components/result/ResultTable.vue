@@ -1,44 +1,58 @@
 <template>
+  <!-- 切換為中文 -->
+  <el-config-provider :locale="zhTw">
+    <!-- 分頁欄 -->
+    <el-pagination
+      v-model:current-page="state.currentPage"
+      v-model:page-size="state.pageSize"
+      :total="copyCalculateResult.length"
+      :page-sizes="[100, 200, 300, 400, 500, 1000]"
+      :layout="state.layout"
+    >
 
-  <el-table
-      class-name="result-table"
-      :data="calculateData"
-      border
-      @sort-change="changeTableSort"
-      :cell-style="{textAlign: 'center'}"
-      :cell-class-name="cellClassName"
-      :header-cell-class-name="headerCellClassName"
-      @cellMouseEnter="cellMouseEnter"
-      @cellMouseLeave="cellMouseLeave"
-  >
-    <el-table-column label="名稱 (代號)" width="125" fixed="left">
-      <template v-slot:default="scope">
-        <a :href="scope.row.stockDividendURL" target="_blank" title="查看歷史股利分配率">
-          {{ scope.row.stockFullName }}
-        </a>
+    </el-pagination>
+
+    <!-- 表格資料 -->
+    <el-table
+        class-name="result-table"
+        :data="calculateData.slice((state.currentPage - 1) * state.pageSize, state.currentPage * state.pageSize)"
+        border
+        @sort-change="changeTableSort"
+        :cell-style="{textAlign: 'center'}"
+        :cell-class-name="cellClassName"
+        :header-cell-class-name="headerCellClassName"
+        @cellMouseEnter="cellMouseEnter"
+        @cellMouseLeave="cellMouseLeave"
+    >
+      <el-table-column label="名稱 (代號)" width="125" fixed="left">
+        <template v-slot:default="scope">
+          <a :href="scope.row.stockDividendURL" target="_blank" title="查看歷史股利分配率">
+            {{ scope.row.stockFullName }}
+          </a>
+        </template>
+      </el-table-column>
+      <el-table-column label="現價" prop="stockPrice" width="100" sortable="custom"></el-table-column>
+      <el-table-column label="目前殖利率" prop="averageYield" width="150" sortable="custom"></el-table-column>
+      <el-table-column label="ROI" prop="roi" width="100" sortable="custom"></el-table-column>
+      <el-table-column label="平均股利 (現金/股票)" prop="averageDividend" width="220"></el-table-column>
+
+      <template v-for="i in (endYield - startYield + 1)">
+        <el-table-column
+            :label="(startYield + i - 1).toString() + '%'"
+            :prop="'yield' + (startYield + i - 1).toString() + 'ConvertPrice'"
+            width="85"
+        ></el-table-column>
       </template>
-    </el-table-column>
-    <el-table-column label="現價" prop="stockPrice" width="100" sortable="custom"></el-table-column>
-    <el-table-column label="目前殖利率" prop="averageYield" width="150" sortable="custom"></el-table-column>
-    <el-table-column label="ROI" prop="roi" width="100" sortable="custom"></el-table-column>
-    <el-table-column label="平均股利 (現金/股票)" prop="averageDividend" width="220"></el-table-column>
 
-    <template v-for="i in (endYield - startYield + 1)">
-      <el-table-column
-          :label="(startYield + i - 1).toString() + '%'"
-          :prop="'yield' + (startYield + i - 1).toString() + 'ConvertPrice'"
-          width="85"
-      ></el-table-column>
-    </template>
-
-  </el-table>
-
+    </el-table>
+  </el-config-provider>
 </template>
 
 <script setup>
-  import { onMounted, reactive, ref } from "vue";
-  import {getCalculateResult, getQueryCalculateResult} from "@/server/calculate.js";
-  import {getItem} from "@/server/localStorage.js";
+  import { onMounted, onUnmounted, reactive, ref } from "vue";
+  import { zhTw } from "element-plus/es/locale/index";
+  import { getCalculateResult, getQueryCalculateResult } from "@/server/calculate.js";
+  import { getItem } from "@/server/localStorage.js";
 
   const props = defineProps({
     type: { required: true },
@@ -52,11 +66,21 @@
   onMounted(async function () {
 
     const data = await getDataByType();
-    // 加入資料到calculateData，除了沒有價格的資料
+    // 加入資料到 calculateData／copyCalculateResult，除了沒有價格的資料
     addDataExceptNoPrice(data)
 
+    updateLayoutWithWidth();
+    window.addEventListener('resize', updateLayoutWithWidth);
     // 觸發loading end，關閉Loading畫面
     loadingEmit('loadingEnd', true)
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('resize', updateLayoutWithWidth);
+  })
+  // -------------------------------- State ---------------------------------------
+  const state = reactive({
+    currentPage: 1, pageSize: 100, layout: 'sizes, prev, pager, next, jumper, total'
   })
 
   // -------------------------------- Data ----------------------------------------
@@ -91,11 +115,19 @@
       copyCalculateResult.push(item);
     })
   }
+
+  // ------------------------------ Pagination -------------------------------------
+  function updateLayoutWithWidth() {
+    if (window.innerWidth <= 576) { state.layout = 'prev, pager, next, total' }
+    else { state.layout = 'sizes, prev, pager, next, jumper, total' }
+  }
+
   // ---------------------------- Table Sortable -----------------------------------
   function changeTableSort(column) {
     const field = column.prop
     const sortType = column.order
 
+    // 不排序，使用copy的資料恢復原本順序
     if (!sortType) {
       copyCalculateResult.forEach((item, i) => calculateData[i] = item);
       return
@@ -193,6 +225,11 @@
 .result-table :deep(.el-table__body-wrapper .el-table__body .el-table__row td.select-col) {
   border-left: 1px solid #949966;
   border-right: 1px solid #949966;
+}
+
+.el-pagination {
+  justify-content: center;
+  margin: 0.5rem 1rem 1rem 1rem;
 }
 
 </style>
