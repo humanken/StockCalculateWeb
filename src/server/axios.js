@@ -1,5 +1,5 @@
 import axios from "axios";
-import router from "../router/index.js";
+import router from "@/router/index.js";
 
 // console.log('import.meta.env: ', import.meta.env)
 
@@ -12,13 +12,24 @@ axios.defaults.responseType = "json"
 axios.defaults.responseEncoding = "utf-8"
 axios.defaults.maxContentLength = 200000
 
-
 axios.interceptors.response.use(resp => {
     if (resp.status !== 200) { return Promise.reject(resp) }
     return resp.data
 }, error => {
-    router.push({path: error.status === 404 ? '/error404': '/error500'})
-    return Promise.reject(error)
+    const status = [404, 500]
+    if (error.hasOwnProperty('response') && status.includes(error.response.status)) {
+        const e = { status: error.response.status, detail: error.response.data.detail }
+        router.push({ name: 'Error', state: { params : e }})
+    }
+    else if (!error.hasOwnProperty('response')) {
+        const e = { status: error.message, detail: '網路異常，請檢查網路連線或稍後再試' }
+        router.push({ name: 'Error', state: { params : e }})
+    }
+    else if (!status.includes(error.response.status)) {
+        return Promise.reject(error)
+    }
+
 })
+
 
 export default axios
