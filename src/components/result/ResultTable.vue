@@ -162,7 +162,7 @@
     let sortData = calculateData.value
 
     // 儲存未排序的資料
-    if (originData === []) { originData = sortData.map(item => item); }
+    if (!originData.length) { originData = sortData.map(item => item); }
 
     // 不排序，使用未排序的資料恢復原本順序
     if (!sortType) {
