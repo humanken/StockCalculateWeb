@@ -18,11 +18,19 @@
           <el-anchor :offset="10" :bound="250" :direction="windowWidth >= 576 ? 'horizontal': 'vertical'" type="underline" class="navbar-nav me-auto mb-lg-0">
             <template v-for="item in contentsInCollapse">
               <el-anchor-link
+                  v-if="item.href === '/'"
+                  class="nav-item"
+                  @click.native="(e) => backHome(e)"
+              >
+                {{ item.text }}
+              </el-anchor-link>
+
+              <el-anchor-link
+                  v-else
                   class="nav-item"
                   :href="item.href ?? null"
                   v-title="item.title ?? null"
                   v-target="item.target ?? null"
-                  @click="item.onclick"
               >
                 {{ item.text }}
               </el-anchor-link>
@@ -44,7 +52,9 @@
 
 <script setup>
 
-import {onMounted, ref} from "vue";
+  import { onMounted, ref } from "vue";
+  import {useRouter} from "vue-router";
+  const router = useRouter()
 
   const props = defineProps({
     fixedTop: { required: false },
@@ -66,6 +76,11 @@ import {onMounted, ref} from "vue";
       if (!binding.value) { return }
       el.firstChild.setAttribute('target', binding.value)
     }
+  }
+
+  const backHome = function (event) {
+    event.preventDefault();
+    router.go(-1);
   }
 
   const windowWidth = ref(window.innerWidth);
