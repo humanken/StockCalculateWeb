@@ -1,11 +1,10 @@
 <template>
-  <span class="input-group-text" id="inputGroup-sizing-default">名稱</span>
+
   <input
       class="text-center"
       id="stock-input"
       list="SelectStock"
-      aria-describedby="inputGroup-sizing-default"
-      placeholder="請輸入股票"
+      placeholder="請輸入或選擇股票"
       v-model="selected"
       @focus="selected = ''"
       @keyup.enter="(event) => {selectFirstMatchOption(); event.target.blur()}"
@@ -62,7 +61,7 @@
 
 <style scoped>
 #stock-input {
-    width: 86%;
+    width: 80%;
     font-size: 1.25rem;
 }
 </style>

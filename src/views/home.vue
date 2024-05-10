@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="home-container container-fluid">
     <!-- 標題欄 (導航欄) -->
     <Navbar
         :fixed-top="true"
@@ -14,39 +14,24 @@
     />
 
     <!-- 開頭畫面 -->
-    <section id="head" class="animation-bg justify-content-center">
+    <section id="head" class="animation-bg">
       <h1 class="text-center" id="head-title">歡迎使用<br>股票試算系統</h1>
       <BtnHeaderSection :single-section-hash="idSingleSection" :all-section-hash="idAllSection"/>
     </section>
 
     <!-- 單筆股票 試算 區塊 -->
-    <section :id="idSingleSection" class="row select-stock-section">
-      <div class="col-6" id="single-stock-box">
-          <h3 class="text-center">單筆股票 試算</h3>
-          <hr>
-          <div class="col-6 input-group m-1 d-flex align-items-center" id="singleSelect">
-              <SelectSingleStock v-model="selectedStockNumber" />
-          </div>
-          <div class="col-12 start-calculate d-flex justify-content-center">
-              <BtnCalculate btn-id="btn-single" :btn-content="selectedStockNumber" />
-          </div>
-      </div>
+    <section :id="idSingleSection">
+      <CardForSingle />
     </section>
     <hr>
 
     <!-- 多筆股票 試算 區塊 -->
-    <section :id="idAllSection" class="row select-stock-section">
-        <div class="col-10" id="all-stock-box">
-          <h3 class="text-center mb-3">多筆股票 試算</h3>
-          <CarouselCategory />
-          <div class="col-12 start-calculate d-flex justify-content-center">
-            <BtnCalculate btn-id="btn-all" />
-          </div>
-        </div>
+    <section :id="idAllSection">
+      <CardForAll />
     </section>
     <hr>
 
-    <section id="introduce" style="height: 10rem;">
+    <section id="introduce">
           <label>瞭解更多</label>
     </section>
   </div>
@@ -54,24 +39,29 @@
 
 
 <script setup>
-  import { onMounted, onUnmounted, ref } from "vue";
+  import { onBeforeMount, onMounted, onUnmounted, ref } from "vue";
+  import { useRoute } from "vue-router";
   import Navbar from "../components/Navbar.vue";
   import BtnHeaderSection from "../components/home/HeaderSectionBtn.vue";
-  import SelectSingleStock from "../components/home/SingleStockSelect.vue";
-  import BtnCalculate from "../components/home/CalculateBtn.vue";
-  import CarouselCategory from "../components/home/CategoryCarousel.vue";
+  import CardForSingle from "../components/home/single/card.vue"
+  import CardForAll from "../components/home/all/card.vue"
 
-  const selectedStockNumber = ref()
+
   const idSingleSection = ref('single-stock-section')
   const idAllSection = ref('all-stock-section')
 
-  let headerSectionPos = 0
   const navbarUseAnimateBg = ref(false);
+  const recodeHash = ref('');
+  const route = useRoute();
+
+  onBeforeMount(() => {
+    recodeHash.value = route.hash
+    window.location.hash = ''
+  })
 
   onMounted(() => {
-    const $headerSection = $('#head');
-    headerSectionPos = $headerSection.offset().top + $headerSection.outerHeight() - $('#idNav').outerHeight();
     window.addEventListener('scroll', handleScroll);
+    window.location.hash = recodeHash.value
   })
 
   onUnmounted(() => {
@@ -80,7 +70,6 @@
 
   function handleScroll() {
     navbarUseAnimateBg.value = $(this).scrollTop() >= 480;
-    console.log('listener scroll: ', navbarUseAnimateBg.value)
   }
 
 </script>
@@ -90,8 +79,6 @@
 
 /* <section id="head"> */
 #head {
-    height: 100vh;
-    display: flex;
     align-items: center;
     position: relative;
 }
@@ -113,15 +100,21 @@
     to {opacity: 1;transform: translate(-50%, -50%);}
 }
 
-/* <section class="select-stock-section"> */
-.select-stock-section {
-    width: 100vw;
-    height: auto;
-    display: flex;
-    position: relative;
-    justify-content: center;
-    padding-top: 5rem;
+.home-container {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center;
+  padding: 0;
 }
+
+section {
+  min-height: 100vh !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* <section class="select-stock-section"> */
 
 #single-stock-box {
     position: relative;

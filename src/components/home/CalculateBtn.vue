@@ -78,7 +78,6 @@
     padding: 12px 20px;
     min-width: 150px;
     min-height: 60px;
-    margin: 1.2rem 1.8rem 1.2rem 1.8rem;
     cursor: pointer;
     position: relative;
     overflow: hidden;

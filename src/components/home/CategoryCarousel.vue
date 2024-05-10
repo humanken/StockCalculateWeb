@@ -10,7 +10,7 @@
       type="radio" class="btn-check col-6"
       name="btnradio" id="twse-cats-btn"
       @click="swiperInstance.slidePrev(500)"
-      checked
+      :checked="isTwseChecked"
     >
     <label class="btn btn-outline-secondary" for="twse-cats-btn">上市</label>
 
@@ -18,6 +18,7 @@
       type="radio" class="btn-check col-6"
       name="btnradio" id="otc-cats-btn"
       @click="swiperInstance.slideNext(500)"
+      :checked="!isTwseChecked"
     >
     <label class="btn btn-outline-secondary" for="otc-cats-btn">上櫃</label>
   </div>
@@ -27,6 +28,7 @@
     :slides-per-view="1"
     :autoplay="false"
     @swiper="(instance) => {swiperInstance = instance}"
+    @slide-change="isTwseChecked = !isTwseChecked"
   >
     <swiper-slide class="table-responsive">
       <CategoryTable
@@ -60,7 +62,8 @@
   import { getItem, setItem } from "@/server/localStorage.js";
   import { getCategoryList } from "@/server/stock.js";
 
-  const swiperInstance = ref()
+  const swiperInstance = reactive('');
+  const isTwseChecked = ref(true);
 
   const data = reactive({
     'twse': {'row': 0, 'cats': []}, 'otc': {'row': 0, 'cats': []},
@@ -68,11 +71,13 @@
   })
 
   onMounted(async () => {
+
     data.excludes =  await getItem('excludes', []);
     data.twse.cats = await getCategoryList(true, false);
     data.otc.cats = await getCategoryList(false, true);
-    data.twse.row = Math.floor(data.twse.cats.length / data.col) + 1
-    data.otc.row = Math.floor(data.otc.cats.length / data.col) + 1
+
+    dynamicChangeRowCol();
+    window.addEventListener('resize', dynamicChangeRowCol)
   })
 
   function handleCheckboxClick(sector_id) {
@@ -85,6 +90,19 @@
     setItem('excludes', data.excludes)
   }
 
+  function dynamicChangeRowCol() {
+    const width = window.innerWidth;
+    if (width <= 600) { data.col = 2 }
+    else if (600 < width && width <= 700) { data.col = 3 }
+    else if (700 < width && width <= 800) { data.col = 4 }
+    else { data.col = 5 }
+    data.twse.row = Math.floor(data.twse.cats.length / data.col) + 1
+    data.otc.row = Math.floor(data.otc.cats.length / data.col) + 1
+  }
+
+  function radioChange() {
+    isTwseChecked.value = !isTwseChecked.value
+  }
 </script>
 
 <style scoped>
