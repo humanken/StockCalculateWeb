@@ -5,7 +5,7 @@
       navbar-use-animate-bg="false"
       brand-text="試算結果"
       :contents-in-collapse="[
-        { colorClassName: 'link-success', href: '/', text: '返回 首頁' },
+        { colorClassName: 'link-success', onclick: () => {$router.go(-1);}, text: '返回 首頁' },
         {
           colorClassName: 'link-danger',
           href: 'https://www.tdcc.com.tw/portal/zh/smWeb/qryStock',

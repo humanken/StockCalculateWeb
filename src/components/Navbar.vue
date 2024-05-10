@@ -19,13 +19,14 @@
             <template v-for="item in contentsInCollapse">
               <el-anchor-link
                   class="nav-item"
-                  :href="item.href"
+                  :href="item.href ?? null"
                   v-title="item.title ?? null"
                   v-target="item.target ?? null"
+                  @click="item.onclick"
               >
                 {{ item.text }}
               </el-anchor-link>
-              </template>
+            </template>
           </el-anchor>
           <!-- 更新資料 日期/時間 -->
           <span
