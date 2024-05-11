@@ -114,20 +114,4 @@ section {
   align-items: center;
 }
 
-/* <section class="select-stock-section"> */
-
-#single-stock-box {
-    position: relative;
-    display: flex;
-    height: 80vh;
-    flex-direction: column;
-    justify-items: center;
-    justify-content: space-evenly;
-}
-
-@media (max-width: 880px) {
-  #singleSelect {
-    justify-content: space-around;
-  }
-}
 </style>
