@@ -9,7 +9,7 @@
       <SelectStock v-model="stockNumberSelected" />
     </div>
 
-    <div class="card-footer bg-transparent">
+    <div class="card-footer">
       <BtnCalculate btn-id="btn-single" :btn-content="stockNumberSelected" />
     </div>
 
@@ -36,5 +36,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.card .card-footer {
+  background-color: transparent;
 }
 </style>

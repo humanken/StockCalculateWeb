@@ -9,7 +9,7 @@
       <CarouselCategory />
     </div>
 
-    <div class="card-footer bg-transparent">
+    <div class="card-footer">
       <BtnCalculate btn-id="btn-all" />
     </div>
 
@@ -30,5 +30,8 @@
 }
 .card .card-body {
   min-height: 25vh;
+}
+.card .card-footer {
+  background-color: transparent;
 }
 </style>

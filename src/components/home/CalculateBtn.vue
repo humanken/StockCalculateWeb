@@ -93,7 +93,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    z-index: -1;
+    /* z-index: -1; */
     transition: transform 0.5s;
     transform-origin: 0 0;
     transition-timing-function: cubic-bezier(0.5,1.6,0.4,0.7);
@@ -108,7 +108,9 @@
     color: white;
     box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
-
+#btn-single::after {
+  background-color: green;
+}
 
 #btn-all{
     color: orange;
@@ -118,7 +120,7 @@
     color: #000;
     box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
-#btn-all::after{
+#btn-all::after {
     background-color: orange;
 }
 
@@ -131,9 +133,6 @@
     left: 50%;
     transform: translate(-50%, -50%);
     transition: 0.4s;
-}
-#btn-single::after{
-  background-color: green;
 }
 #btn-single:hover::before, #btn-all:hover::before{
     top: 150%;
