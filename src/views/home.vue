@@ -18,7 +18,6 @@
       <h1 class="text-center" id="head-title">歡迎使用<br>股票試算系統</h1>
       <BtnHeaderSection :single-section-hash="idSingleSection" :all-section-hash="idAllSection"/>
     </section>
-
     <!-- 單筆股票 試算 區塊 -->
     <section :id="idSingleSection">
       <CardForSingle />
@@ -34,12 +33,13 @@
     <section id="introduce">
           <label>瞭解更多</label>
     </section>
+
   </div>
 </template>
 
 
 <script setup>
-  import { onBeforeMount, onMounted, onUnmounted, ref } from "vue";
+import {onActivated, onMounted, onUnmounted, ref} from "vue";
   import { useRoute } from "vue-router";
   import Navbar from "../components/Navbar.vue";
   import BtnHeaderSection from "../components/home/HeaderSectionBtn.vue";
@@ -51,17 +51,14 @@
   const idAllSection = ref('all-stock-section')
 
   const navbarUseAnimateBg = ref(false);
-  const recodeHash = ref('');
-  const route = useRoute();
 
-  onBeforeMount(() => {
-    recodeHash.value = route.hash
-    window.location.hash = ''
+  onActivated(() => {
+    const route = useRoute();
+    // window.scrollTo({left: 0, top: route.params.scrollTop, behavior: "instant"})
   })
 
   onMounted(() => {
     window.addEventListener('scroll', handleScroll);
-    window.location.hash = recodeHash.value
   })
 
   onUnmounted(() => {
@@ -78,11 +75,6 @@
 <style scoped>
 
 /* <section id="head"> */
-#head {
-    align-items: center;
-    position: relative;
-}
-
 
 #head-title {
     color: #fff;

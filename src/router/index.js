@@ -10,17 +10,20 @@ const  router = createRouter({
         {
             path: '/',
             name: "Home",
-            component: () => import('../views/home.vue')
+            component: () => import('../views/home.vue'),
+            meta: { index: 0, keepAlive: true }
         },
         {
             path: '/result',
             name: "Result",
-            component: () => import('../views/result.vue')
+            component: () => import('../views/result.vue'),
+            meta: { index: 1, keepAlive: false }
         },
         {
             path: '/error',
             name: "Error",
-            component: () => import('../views/error.vue')
+            component: () => import('../views/error.vue'),
+            meta: { index: -999, keepAlive: false }
         }
     ]
 })
