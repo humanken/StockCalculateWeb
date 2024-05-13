@@ -150,7 +150,8 @@
 
   // ------------------------------ Pagination -------------------------------------
   function updateLayoutWithWidth() {
-    if (window.innerWidth <= 576) { state.layout = 'prev, pager, next, total' }
+    const cardBodyEl = document.getElementById('resultContainer')
+    if (cardBodyEl.clientWidth <= 576) { state.layout = 'prev, pager, next, total' }
     else { state.layout = 'sizes, prev, pager, next, jumper, total' }
   }
 

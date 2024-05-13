@@ -15,12 +15,12 @@
       </button>
       <!-- 會被放入 navbar-toggler 的內容 -->
       <div class="collapse navbar-collapse" id="navbarNav">
-          <el-anchor :offset="10" :bound="250" :direction="windowWidth >= 576 ? 'horizontal': 'vertical'" type="underline" class="navbar-nav me-auto mb-lg-0">
+          <el-anchor :offset="10" :bound="250" :direction="containerWidth.clientWidth >= 576 ? 'horizontal': 'vertical'" type="underline" class="navbar-nav me-auto mb-lg-0">
             <template v-for="item in contentsInCollapse">
               <el-anchor-link
                   v-if="item.href === '/'"
                   class="nav-item"
-                  @click.native="(e) => backHome(e)"
+                  @click.native="$router.go(-1);"
               >
                 {{ item.text }}
               </el-anchor-link>
@@ -52,7 +52,7 @@
 
 <script setup>
 
-  import { onMounted, ref } from "vue";
+import {onMounted, onUnmounted, ref} from "vue";
   import {useRouter} from "vue-router";
   const router = useRouter()
 
@@ -83,11 +83,12 @@
     router.go(-1);
   }
 
-  const windowWidth = ref(window.innerWidth);
+  const containerWidth = ref(0);
 
   onMounted(() => {
-    window.addEventListener('resize', () => { windowWidth.value = window.innerWidth; })
+    containerWidth.value = document.getElementById('idNav').parentElement
   })
+
 
 </script>
 
