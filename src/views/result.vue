@@ -1,20 +1,19 @@
 <template>
-  <div id="resultContainer">
+  <div class="result-container" id="resultContainer">
     <!-- 標題欄 (導航欄) -->
     <Navbar
+        :fixed-top="true"
         navbar-use-animate-bg="false"
         brand-text="試算結果"
         :contents-in-collapse="[
-          { colorClassName: 'link-success', href: '/', text: '返回 首頁' },
+          { isBack: true, text: '返回 首頁' },
           {
-            colorClassName: 'link-danger',
             href: 'https://www.tdcc.com.tw/portal/zh/smWeb/qryStock',
             title: '開啟集保戶股權分散表',
             text: '查詢 大股東比例',
             target: '_blank'
           },
           {
-            colorClassName: 'link-danger',
             href: 'https://invest.wessiorfinance.com/stock.html',
             title: '開啟存股試算',
             text: '存股 試算',
@@ -28,8 +27,10 @@
     />
 
     <!-- table 資料 -->
-    <div class="result-table-wrapper">
-      <TableResult :type="tableType" @loading-end="closeLoading" />
+    <div class="card">
+      <div class="card-body">
+        <TableResult :type="tableType" @loading-end="closeLoading" />
+      </div>
     </div>
   </div>
 </template>
@@ -43,18 +44,19 @@
 
   const tableType = ref(history.state.params.tableType)
 
+  const state = reactive({
+    loading: {
+      component: null,
+      text: '試算中',
+      timers: [undefined, undefined]
+    }
+  })
+
   onMounted(() => {
     startDynamicLoadingService('resultContainer')
   })
 
   // -------------------------------- Loading ----------------------------------------
-  const state = reactive({
-    loading: {
-      'component': null,
-      'text': '試算中',
-      'timers': [undefined, undefined]
-    }
-  })
 
   function startDynamicLoadingService(targetID) {
     state.loading.component = ElLoading.service({
@@ -98,13 +100,11 @@
 </script>
 
 <style>
-
-.result-table-wrapper {
-  height: 80vh;
-  display: grid;
+.result-container {
+  height: 100vh;
+  display: flex;
   justify-content: center;
   align-items: center;
-  margin: 2rem 1rem 1rem 1rem;
 }
 
 .el-loading-mask {
@@ -124,6 +124,19 @@
 .el-loading-spinner .el-loading-text {
   color: white !important;
   font-size: 2rem !important;
+}
+
+.card {
+  text-align: center;
+  width: 90%;
+}
+
+.card .card-body {
+  min-height: 30vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
 }
 
 </style>
