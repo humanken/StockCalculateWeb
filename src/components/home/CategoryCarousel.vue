@@ -62,8 +62,8 @@
   import { getItem, setItem } from "@/server/localStorage.js";
   import { getCategoryList } from "@/server/stock.js";
 
-  const swiperInstance = reactive('');
-  const isTwseChecked = ref(true);
+  let swiperInstance = ref('');
+  let isTwseChecked = ref(true);
 
   const data = reactive({
     'twse': {'row': 0, 'cats': []}, 'otc': {'row': 0, 'cats': []},
@@ -106,4 +106,7 @@
 </script>
 
 <style scoped>
+.swiper {
+  max-width: 100%;
+}
 </style>
