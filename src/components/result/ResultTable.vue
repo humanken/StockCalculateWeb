@@ -7,7 +7,9 @@
       <!-- 表格資料 -->
       <el-table
           class-name="result-table"
-          :data="calculateData.slice((state.currentPage - 1) * state.pageSize, state.currentPage * state.pageSize)"
+          :data="state.data.slice(
+              (state.pagination.currentPage - 1) * state.pagination.pageSize,
+              state.pagination.currentPage * state.pagination.pageSize)"
           border
           @sort-change="changeTableSort"
           :cell-style="{textAlign: 'center'}"
@@ -42,11 +44,11 @@
     <div class="card-footer">
       <!-- 分頁欄 -->
       <el-pagination
-        v-model:current-page="state.currentPage"
-        v-model:page-size="state.pageSize"
-        :total="dataState.length"
-        :page-sizes="[100, 200, 300, 400, 500, 1000]"
-        :layout="state.layout"
+        v-model:current-page="state.pagination.currentPage"
+        v-model:page-size="state.pagination.pageSize"
+        :total="state.dataInfo.length"
+        :page-sizes="state.pagination.pageSizeList"
+        :layout="state.pagination.layout"
       ></el-pagination>
     </div>
 
@@ -55,7 +57,7 @@
 </template>
 
 <script setup>
-  import { onMounted, onUnmounted, reactive, ref } from "vue";
+import {onMounted, onUnmounted, reactive, readonly, ref} from "vue";
   import { zhTw } from "element-plus/es/locale/index";
   import { getCalculateResult, getQueryCalculateResult } from "@/server/calculate.js";
   import { getItem } from "@/server/localStorage.js";
@@ -69,21 +71,23 @@
   const loadingEmit = defineEmits(['loadingEnd'])
 
   onMounted(async function () {
-
     if (props.type === 'table-single') {
-      calculateData.data = getSingleData()
+      state.data = await getSingleData()
+      state.dataInfo.length = state.data.length
     }
     else if (props.type === 'table-all') {
-      excludes.value = await getItem('excludes', [])
+      state.excludes = await getItem('excludes', [])
       await getDataAndUpdateState();
     }
 
+    // 更新分頁(pagination)排版
     updateLayoutWithWidth();
-    window.addEventListener('resize', updateLayoutWithWidth);
+
     // 觸發loading end，關閉Loading畫面
     loadingEmit('loadingEnd', true)
     // 緩加載
     startLazyLoadingData(6000);
+    window.addEventListener('resize', updateLayoutWithWidth);
   })
 
   onUnmounted(() => {
@@ -91,23 +95,26 @@
   })
   // -------------------------------- State ---------------------------------------
   const state = reactive({
-    currentPage: 1, pageSize: 100, layout: 'sizes, prev, pager, next, jumper, total'
+    pagination: {
+      currentPage: 1,
+      pageSize: 100,
+      layout: 'sizes, prev, pager, next, jumper, total',
+      pageSizeList: [100, 200, 300, 400, 500, 1000]
+    },
+    cellHover: {
+      rowIndex: undefined, colIndex: undefined
+    },
+    dataInfo: {
+      nextOffset: 0,
+      limit: 1000,
+      length: 0
+    },
+    excludes: [],
+    data: [],
+    copyData: []
   })
-  
-  const dataState = reactive({
-     nextOffset: 0, limit: 1000, length: 0
-  })
-  
-  function setDataState(response) {
-    dataState.nextOffset = response.nextOffset
-    dataState.limit = response.limit
-    dataState.length = calculateData.value.length
-  }
 
   // -------------------------------- Data ----------------------------------------
-  const excludes = ref([]);
-  const calculateData = ref([]);
-
   async function getSingleData() {
     const params = {
       numbers: history.state.params.stockNumbers,
@@ -118,18 +125,22 @@
   }
 
   async function getDataAndUpdateState(timer=undefined) {
-    if (timer && !dataState.nextOffset) { clearInterval(timer); return;}
-    const resp = await getResponseByQuery(dataState.nextOffset, excludes.value)
+    if (timer && !state.dataInfo.nextOffset) { clearInterval(timer); return;}
+    const resp = await getResponseByQuery()
     // 取得資料，去除沒有價格的資料
-    calculateData.value = [...calculateData.value, ...delDataWithoutPrice(resp.data)];
-    // 儲存資料狀態
-    setDataState(resp);
+    state.data = [...state.data, ...delDataWithoutPrice(resp.data)];
+    // 額外儲存資料，不排序時可用來恢復原本順序
+    state.copyData = [...state.copyData, ...delDataWithoutPrice(resp.data)]
+    // 儲存回覆的資料
+    state.dataInfo.nextOffset = resp.nextOffset
+    state.dataInfo.limit = resp.limit
+    state.dataInfo.length = state.copyData.length
   }
 
-  async function getResponseByQuery(offset = 0, excludes) {
+  async function getResponseByQuery() {
     const params = {
-      skip: offset, limit: dataState.limit,
-      excludes: excludes,
+      skip: state.dataInfo.nextOffset, limit: state.dataInfo.limit,
+      excludes: state.excludes,
       yieldStart: props.startYield,
       yieldEnd: props.endYield
     }
@@ -157,23 +168,19 @@
   // ------------------------------ Pagination -------------------------------------
   function updateLayoutWithWidth() {
     const cardBodyEl = document.getElementById('resultContainer')
-    if (cardBodyEl.clientWidth <= 576) { state.layout = 'prev, pager, next, total' }
-    else { state.layout = 'sizes, prev, pager, next, jumper, total' }
+    if (cardBodyEl.clientWidth <= 576) { state.pagination.layout = 'prev, pager, next, total' }
+    else { state.pagination.layout = 'sizes, prev, pager, next, jumper, total' }
   }
 
   // ---------------------------- Table Sortable -----------------------------------
-  let originData = [];
   function changeTableSort(column) {
     const field = column.prop
     const sortType = column.order
-    let sortData = calculateData.value
+    let sortData = state.data
 
-    // 儲存未排序的資料
-    if (!originData.length) { originData = sortData.map(item => item); }
-
-    // 不排序，使用未排序的資料恢復原本順序
+    // 不排序，使用只讀屬性的資料恢復原本順序
     if (!sortType) {
-      calculateData.value = originData
+      state.data = state.copyData
       return
     }
 
@@ -195,39 +202,37 @@
       sortData.map(item => { item[field] = `${item[field]}%` });
     }
 
-    calculateData.value = sortData
+    state.data = sortData
   }
 
   // ------------------------------ Cell Hover -------------------------------------
-  const hoverRowIndex = ref(undefined)
-  const hoverColIndex = ref(undefined)
   function cellClassName({row, column, rowIndex, columnIndex}) {
     row.rowIndex = rowIndex
     column.columnIndex = columnIndex
 
-    if (rowIndex === hoverRowIndex.value && columnIndex === hoverColIndex.value) {
+    if (rowIndex === state.cellHover.rowIndex && columnIndex === state.cellHover.colIndex) {
       return 'select-row select-col'
-    } else if (rowIndex === hoverRowIndex.value) {
+    } else if (rowIndex === state.cellHover.rowIndex) {
       return 'select-row'
-    } else if (columnIndex === hoverColIndex.value) {
+    } else if (columnIndex === state.cellHover.colIndex) {
       return 'select-col'
     }
   }
 
   function headerCellClassName({columnIndex}) {
-    if (columnIndex === hoverColIndex.value) {
+    if (columnIndex === state.cellHover.colIndex) {
       return 'select-col'
     }
   }
 
   function cellMouseEnter(row, column) {
-    hoverRowIndex.value = row.rowIndex
-    hoverColIndex.value = column.columnIndex
+    state.cellHover.rowIndex = row.rowIndex
+    state.cellHover.colIndex = column.columnIndex
   }
 
   function cellMouseLeave() {
-    hoverRowIndex.value = undefined
-    hoverColIndex.value = undefined
+    state.cellHover.rowIndex = undefined
+    state.cellHover.colIndex = undefined
   }
 
 </script>
