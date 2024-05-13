@@ -26,21 +26,17 @@
         ]"
     />
 
-    <!-- table 資料 -->
-    <div class="card">
-      <div class="card-body">
-        <TableResult :type="tableType" @loading-end="closeLoading" />
-      </div>
-    </div>
+    <!-- 試算結果表格 -->
+    <CardTableResult :type="tableType" @loading-end="closeLoading" />
   </div>
 </template>
 
 <script setup>
 
   import Navbar from "@/components/Navbar.vue";
-  import {ref, onMounted, reactive} from "vue";
+  import { ref, onMounted, reactive } from "vue";
   import { ElLoading } from "element-plus";
-  import TableResult from "@/components/result/ResultTable.vue";
+  import CardTableResult from "@/components/result/ResultTable.vue";
 
   const tableType = ref(history.state.params.tableType)
 
@@ -124,19 +120,6 @@
 .el-loading-spinner .el-loading-text {
   color: white !important;
   font-size: 2rem !important;
-}
-
-.card {
-  text-align: center;
-  width: 90%;
-}
-
-.card .card-body {
-  min-height: 30vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
 }
 
 </style>

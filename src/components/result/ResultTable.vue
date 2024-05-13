@@ -1,51 +1,57 @@
 <template>
   <!-- 切換為中文 -->
   <el-config-provider :locale="zhTw">
-  <!-- 分頁欄 -->
-  <el-pagination
-    v-model:current-page="state.currentPage"
-    v-model:page-size="state.pageSize"
-    :total="dataState.length"
-    :page-sizes="[100, 200, 300, 400, 500, 1000]"
-    :layout="state.layout"
-  >
+   <div class="card">
 
-  </el-pagination>
+    <div class="card-body">
+      <!-- 表格資料 -->
+      <el-table
+          class-name="result-table"
+          :data="calculateData.slice((state.currentPage - 1) * state.pageSize, state.currentPage * state.pageSize)"
+          border
+          @sort-change="changeTableSort"
+          :cell-style="{textAlign: 'center'}"
+          :cell-class-name="cellClassName"
+          :header-cell-class-name="headerCellClassName"
+          @cellMouseEnter="cellMouseEnter"
+          @cellMouseLeave="cellMouseLeave"
+      >
+        <el-table-column label="名稱 (代號)" width="125" fixed="left">
+          <template v-slot:default="scope">
+            <a :href="scope.row.stockDividendURL" target="_blank" title="查看歷史股利分配率">
+              {{ scope.row.stockFullName }}
+            </a>
+          </template>
+        </el-table-column>
+        <el-table-column label="現價" prop="stockPrice" width="100" sortable="custom"></el-table-column>
+        <el-table-column label="目前殖利率" prop="averageYield" width="150" sortable="custom"></el-table-column>
+        <el-table-column label="ROI" prop="roi" width="100" sortable="custom"></el-table-column>
+        <el-table-column label="平均股利 (現金/股票)" prop="averageDividend" width="220"></el-table-column>
 
-  <!-- 表格資料 -->
-  <el-table
-      class-name="result-table"
-      :data="calculateData.slice((state.currentPage - 1) * state.pageSize, state.currentPage * state.pageSize)"
-      border
-      @sort-change="changeTableSort"
-      :cell-style="{textAlign: 'center'}"
-      :cell-class-name="cellClassName"
-      :header-cell-class-name="headerCellClassName"
-      @cellMouseEnter="cellMouseEnter"
-      @cellMouseLeave="cellMouseLeave"
-  >
-    <el-table-column label="名稱 (代號)" width="125" fixed="left">
-      <template v-slot:default="scope">
-        <a :href="scope.row.stockDividendURL" target="_blank" title="查看歷史股利分配率">
-          {{ scope.row.stockFullName }}
-        </a>
-      </template>
-    </el-table-column>
-    <el-table-column label="現價" prop="stockPrice" width="100" sortable="custom"></el-table-column>
-    <el-table-column label="目前殖利率" prop="averageYield" width="150" sortable="custom"></el-table-column>
-    <el-table-column label="ROI" prop="roi" width="100" sortable="custom"></el-table-column>
-    <el-table-column label="平均股利 (現金/股票)" prop="averageDividend" width="220"></el-table-column>
+        <template v-for="i in (endYield - startYield + 1)">
+          <el-table-column
+              :label="(startYield + i - 1).toString() + '%'"
+              :prop="'yield' + (startYield + i - 1).toString() + 'ConvertPrice'"
+              width="85"
+          ></el-table-column>
+        </template>
 
-    <template v-for="i in (endYield - startYield + 1)">
-      <el-table-column
-          :label="(startYield + i - 1).toString() + '%'"
-          :prop="'yield' + (startYield + i - 1).toString() + 'ConvertPrice'"
-          width="85"
-      ></el-table-column>
-    </template>
+      </el-table>
+    </div>
 
-  </el-table>
-</el-config-provider>
+    <div class="card-footer">
+      <!-- 分頁欄 -->
+      <el-pagination
+        v-model:current-page="state.currentPage"
+        v-model:page-size="state.pageSize"
+        :total="dataState.length"
+        :page-sizes="[100, 200, 300, 400, 500, 1000]"
+        :layout="state.layout"
+      ></el-pagination>
+    </div>
+
+   </div>
+  </el-config-provider>
 </template>
 
 <script setup>
@@ -228,47 +234,67 @@
 
 <style lang="css" scoped>
 
+/* 分頁欄 */
+.card {
+  text-align: center;
+  position: absolute;
+  top: 78px;
+  width: 90%;
+  max-height: 90vh;
+}
+
+/* 表格 */
+.card .card-body {
+  min-height: 30vh;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
 @media (max-width: 1024px) {
   .result-table { font-size: unset; }
 }
 @media (min-width: 1024px){
   .result-table { font-size: 1.2rem; }
 }
-.result-table {
-  width: 100%;
-  height: 100%;
-}
 
+/* 表格的標頭 */
 .result-table :deep(.el-table__header-wrapper .el-table__header th) {
   text-align: center;
   border: 0;
   background-color: #1989ff;
   color: white;
 }
-
+/* 與hover cell同一列的標頭 */
 .result-table :deep(.el-table__header-wrapper .el-table__header th.select-col) {
   border-left: 1px solid #949966;
   border-right: 1px solid #949966;
 }
-
+/* hover cell */
 .result-table :deep(.el-table__body-wrapper .el-table__body .el-table__row td:hover) {
   border: 1px solid #949966;
   background-color: rgba(148, 153, 102, 0.2);
 }
-
+/* 與hover cell同一行 */
 .result-table :deep(.el-table__body-wrapper .el-table__body .el-table__row td.select-row) {
   border-top: 1px solid #949966;
   border-bottom: 1px solid #949966;
 }
-
+/* 與hover cell同一列 */
 .result-table :deep(.el-table__body-wrapper .el-table__body .el-table__row td.select-col) {
   border-left: 1px solid #949966;
   border-right: 1px solid #949966;
 }
 
+/* 分頁欄 */
+.card .card-footer {
+  padding: 0;
+  background-color: transparent;
+}
 .el-pagination {
   justify-content: center;
-  margin: 0.5rem 1rem 1rem 1rem;
 }
 
 </style>
