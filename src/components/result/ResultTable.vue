@@ -18,23 +18,23 @@
           @cellMouseEnter="cellMouseEnter"
           @cellMouseLeave="cellMouseLeave"
       >
-        <el-table-column label="名稱 (代號)" width="125" fixed="left">
+        <el-table-column label="名稱 (代號)" min-width="125" fixed="left">
           <template v-slot:default="scope">
             <a :href="scope.row.stockDividendURL" target="_blank" title="查看歷史股利分配率">
               {{ scope.row.stockFullName }}
             </a>
           </template>
         </el-table-column>
-        <el-table-column label="現價" prop="stockPrice" width="100" sortable="custom"></el-table-column>
-        <el-table-column label="目前殖利率" prop="averageYield" width="150" sortable="custom"></el-table-column>
-        <el-table-column label="ROI" prop="roi" width="100" sortable="custom"></el-table-column>
-        <el-table-column label="平均股利 (現金/股票)" prop="averageDividend" width="220"></el-table-column>
+        <el-table-column label="收盤價" prop="stockPrice" min-width="110" sortable="custom"></el-table-column>
+        <el-table-column label="目前殖利率" prop="averageYield" min-width="150" sortable="custom"></el-table-column>
+        <el-table-column label="ROI" prop="roi" min-width="100" sortable="custom"></el-table-column>
+        <el-table-column label="平均股利 (現金/股票)" prop="averageDividend" min-width="210"></el-table-column>
 
         <template v-for="i in (endYield - startYield + 1)">
           <el-table-column
               :label="(startYield + i - 1).toString() + '%'"
               :prop="'yield' + (startYield + i - 1).toString() + 'ConvertPrice'"
-              width="85"
+              min-width="85"
           ></el-table-column>
         </template>
 
@@ -168,7 +168,8 @@ import {onMounted, onUnmounted, reactive, readonly, ref} from "vue";
   // ------------------------------ Pagination -------------------------------------
   function updateLayoutWithWidth() {
     const cardBodyEl = document.getElementById('resultContainer')
-    if (cardBodyEl.clientWidth <= 576) { state.pagination.layout = 'prev, pager, next, total' }
+    if (cardBodyEl.clientWidth <= 628) { state.pagination.layout = 'prev, jumper, next, total' }
+    else if (cardBodyEl.clientWidth <= 796) { state.pagination.layout = 'prev, pager, next, jumper, total' }
     else { state.pagination.layout = 'sizes, prev, pager, next, jumper, total' }
   }
 
