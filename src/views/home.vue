@@ -39,8 +39,7 @@
 
 
 <script setup>
-import {onActivated, onMounted, onUnmounted, ref} from "vue";
-  import { useRoute } from "vue-router";
+  import { onMounted, onUnmounted, ref } from "vue";
   import Navbar from "../components/Navbar.vue";
   import BtnHeaderSection from "../components/home/HeaderSectionBtn.vue";
   import CardForSingle from "../components/home/single/card.vue"
@@ -52,10 +51,6 @@ import {onActivated, onMounted, onUnmounted, ref} from "vue";
 
   const navbarUseAnimateBg = ref(false);
 
-  onActivated(() => {
-    const route = useRoute();
-    // window.scrollTo({left: 0, top: route.params.scrollTop, behavior: "instant"})
-  })
 
   onMounted(() => {
     window.addEventListener('scroll', handleScroll);

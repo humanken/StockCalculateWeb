@@ -1,12 +1,12 @@
 <template>
   <div>
      <router-view v-slot="{ Component }">
-       <transition :name="transitionName">
+       <transition :name="state.transition.name" v-on:before-leave="scrollToTop">
          <keep-alive>
            <component v-if="$route.meta.keepAlive" :is="Component"></component>
          </keep-alive>
        </transition>
-       <transition :name="transitionName">
+       <transition :name="state.transition.name">
          <component v-if="!$route.meta.keepAlive" :is="Component" :key="$route.path"></component>
        </transition>
      </router-view>
@@ -15,18 +15,20 @@
 
 <script setup>
   import { RouterView, useRouter } from "vue-router";
-  import {onActivated, onMounted, ref} from "vue";
+  import {onActivated, onMounted, reactive, ref} from "vue";
 
   const router = useRouter();
-  const transitionName = ref('fade')
+
+  const state = reactive({
+    transition: { name: '', toLeft: 'slide-left', toRight: 'slide-right', none: '' }
+  })
 
   router.beforeEach((to, from) => {
-    recordScrollTop(to, from)
 
     setTransitionName(to, from)
 
-    console.log('to: ', to)
-    console.log('from: ', from)
+    // console.log('to: ', to)
+    // console.log('from: ', from)
   })
 
   function setTransitionName(to, from) {
@@ -38,29 +40,18 @@
      * index 相同 -> 不加動畫
      */
     if (from.meta.index < to.meta.index) {
-      transitionName.value = 'slide-left'
+      state.transition.name = state.transition.toLeft
     }
     else if (from.meta.index > to.meta.index) {
-      transitionName.value = 'slide-right'
+      state.transition.name = state.transition.toRight
     }
     else {
-      transitionName.value = ''
+      state.transition.name = state.transition.none
     }
   }
 
-  const scrollTop = ref(0)
-  function recordScrollTop(to, from) {
-    /**
-     * 紀錄／設定 頁面滾動位置
-     * 從 Home 頁面跳轉時，儲存scrollTop
-     * 到 Home 頁面時，設定route內params屬性：scrollTop.value
-     */
-    if (from.name === 'Home') {
-      scrollTop.value = window.scrollY
-    }
-    if (to.name === 'Home') {
-      to.params.scrollTop = scrollTop.value
-    }
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: "instant" })
   }
 
 
@@ -79,29 +70,27 @@
     100% {background-position: 0 0;}
 }
 
-.slide-left-enter-active {
-  animation: slide-left-in 0.6s;
-}
-.slide-left-leave-active {
-  animation: slide-left-out 0.6s;
-}
-.slide-right-enter-active {
-  animation: slide-right-in 0.6s;
-}
+/* 滑動的過渡效果 */
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
 .slide-right-leave-active {
-  animation: slide-right-out 0.6s;
-}
-@keyframes slide-left-in {
-  0% { transform: translateX(100%);} 100% { transform: translateX(0%) }
-}
-@keyframes slide-left-out {
-  0% { transform: translateX(0%);} 100% { transform: translateX(-100%) }
-}
-@keyframes slide-right-in {
-  0% { transform: translateX(-100%);} 100% { transform: translateX(0%) }
-}
-@keyframes slide-right-out {
-  0% { transform: translateX(0%);} 100% { transform: translateX(100%) }
+  transition: all 0.8s cubic-bezier(.55, 0, .1, 1);
 }
 
+/* 向左滑進入 */
+.slide-left-enter-from { transform: translateX(100%); }
+.slide-left-enter-to { transform: translateX(0%); }
+
+/* 向左滑離開 */
+.slide-left-leave-from { transform: translateX(0%); }
+.slide-left-leave-to { transform: translateX(-100%); }
+
+/* 向右滑進入 */
+.slide-right-enter-from { transform: translateX(-100%); }
+.slide-right-enter-to { transform: translateX(0%); }
+
+/* 向右滑離開 */
+.slide-right-leave-from { transform: translateX(0%); }
+.slide-right-leave-to { transform: translateX(100%); }
 </style>
