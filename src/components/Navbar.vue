@@ -74,8 +74,8 @@
     // 必須先執行配對，監聽是之後畫面更動才執行
     mediaMatchForAnchor();
 
-    // 新增監聽
-    addAnchorMediaListener();
+    // 新增anchor媒體配對 監聽
+    state.anchor.mediaQueryList.addEventListener('change', mediaMatchForAnchor)
   })
 
   // -------------------------------- v-blind ----------------------------------------
@@ -134,16 +134,6 @@
     else {
       state.anchor.direction = 'vertical'
     }
-  }
-
-  function addAnchorMediaListener() {
-    /**
-     * 新增anchor媒體配對監聽器
-     *
-     */
-    state.anchor.mediaQueryList.addEventListener(
-        'change', changeAnchorDirectionWithMedia
-    )
   }
 
 </script>
