@@ -15,8 +15,7 @@
       </button>
       <!-- 會被放入 navbar-toggler 的內容 -->
       <div class="collapse navbar-collapse" id="navbarNav">
-        <!-- TODO(新增或刪除，監聽寬度->動態改變direction) -->
-        <el-anchor :offset="10" :bound="250" :direction="containerClientWidth >= 576 ? 'horizontal': 'vertical'" type="underline" class="navbar-nav me-auto mb-lg-0">
+        <el-anchor :offset="10" :bound="250" :direction="state.anchor.direction" :marker="false" type="underline" class="navbar-nav me-auto mb-lg-0">
           <template v-for="item in contentsInCollapse">
             <el-anchor-link
               v-if="item.isBack"
@@ -53,7 +52,7 @@
 
 <script setup>
 
-  import { onMounted, ref } from "vue";
+  import { onMounted, reactive } from "vue";
 
   const props = defineProps({
     fixedTop: { required: false },
@@ -63,6 +62,23 @@
     updatesInCollapse: { required: false, default: [] }
   })
 
+  const state = reactive({
+    anchor: {
+      direction: 'horizontal',
+      mediaQueryList: typeof MediaQueryList
+    }
+  })
+
+  onMounted(() => {
+    state.anchor.mediaQueryList = getAnchorMediaQueryList()
+    // 必須先執行配對，監聽是之後畫面更動才執行
+    mediaMatchForAnchor();
+
+    // 新增監聽
+    addAnchorMediaListener();
+  })
+
+  // -------------------------------- v-blind ----------------------------------------
   const vTitle = {
     mounted: (el, binding) => {
       if (!binding.value) { return }
@@ -77,12 +93,58 @@
     }
   }
 
-  <!-- TODO(新增或刪除，監聽寬度->動態改變direction) -->
-  const containerClientWidth = ref(0);
-  onMounted(() => {
-    containerClientWidth.value = document.getElementById('idNav').parentElement.clientWidth
-  })
+  // ---------------------------- Anchor Media Match ----------------------------------
 
+  function getAnchorMediaQueryList() {
+    /**
+     * 根據 navbar 的 className，
+     * 取得 視窗的最小寬度 條件
+     */
+    let matchString;
+    const navbarEl = document.getElementById('idNav')
+    const findClass = (search) => {return navbarEl.classList.contains(search)}
+    switch (true) {
+      case findClass('navbar-expand-sm'):
+        matchString = '(min-width: 576px)'
+        break
+      case findClass('navbar-expand-md'):
+        matchString = '(min-width: 768px)'
+        break
+      case findClass('navbar-expand-lg'):
+        matchString = '(min-width: 992px)'
+        break
+      case findClass('navbar-expand-xl'):
+        matchString = '(min-width: 1200px)'
+        break
+      default:
+        matchString = ''
+        break
+    }
+    return window.matchMedia(matchString)
+  }
+  
+  function mediaMatchForAnchor() {
+    /**
+     * 符合條件 -> anchor 排列為橫向，
+     * 否則 -> anchor 排列為直向
+     */
+    if (state.anchor.mediaQueryList.matches) {
+      state.anchor.direction = 'horizontal'
+    }
+    else {
+      state.anchor.direction = 'vertical'
+    }
+  }
+
+  function addAnchorMediaListener() {
+    /**
+     * 新增anchor媒體配對監聽器
+     *
+     */
+    state.anchor.mediaQueryList.addEventListener(
+        'change', changeAnchorDirectionWithMedia
+    )
+  }
 
 </script>
 
