@@ -1,7 +1,7 @@
 <template>
   <div>
      <router-view v-slot="{ Component }">
-       <transition :name="state.transition.name" v-on:before-leave="scrollToTop">
+       <transition :name="state.transition.name">
          <keep-alive>
            <component v-if="$route.meta.keepAlive" :is="Component"></component>
          </keep-alive>
@@ -47,11 +47,6 @@
       state.transition.name = state.transition.none
     }
   }
-
-  function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: "instant" })
-  }
-
 
 </script>
 

@@ -25,7 +25,16 @@ const  router = createRouter({
             component: () => import('../views/error.vue'),
             meta: { index: -999, keepAlive: false }
         }
-    ]
+    ],
+    scrollBehavior(to, from, savePosition) {
+        if (to.name === "Home" ) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve({ el: to.hash})
+                }, 1200)
+            })
+        }
+    }
 })
 
 export default router
