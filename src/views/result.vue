@@ -54,28 +54,16 @@
 
   // -------------------------------- Loading ----------------------------------------
 
-  function startDynamicLoadingService(targetID) {
-    state.loading.component = ElLoading.service({
-      target: document.getElementById(targetID),
-      lock: true,
-      fullscreen: true,
-      text: state.loading.text,
-      background: 'rgba(0, 0, 0, 0.9)'
-    })
-    state.loading.timers = [ startTextTimer(), startImgTimer() ]
-  }
-
-  function startTextTimer() {
-    return setInterval(() => {
-      if (state.loading.text === '試算中...') {
-        state.loading.text = '試算中'
-      }
-      else {
-        state.loading.text += '.'
-      }
-      state.loading.component.setText(state.loading.text);
-    }, 1000)
-  }
+  onBeforeMount(() => {
+    // 必須在掛載前，確認table type，否則CardTableResult無法得到值
+    if (history.state.hasOwnProperty('params')) {
+      tableType.value = history.state.params.tableType
+    }
+    else {
+      router.replace({name: 'Home'})
+      closeLoading();
+    }
+  })
 
   function startImgTimer() {
     return setInterval(() => {
