@@ -22,7 +22,7 @@
 
 <script setup>
 
-  import { ref } from "vue";
+  import { inject, ref } from "vue";
   import { useRouter } from "vue-router";
   import { ElMessage } from "element-plus";
 
@@ -36,23 +36,27 @@
     }
   })
 
+  const showLoading = inject('$showLoading')
 
   let dataContent = ref('');
 
   const router = useRouter();
   function goToResult(event) {
-    if (event.target.id === 'btn-single') {
-      if (dataContent.value === "未選擇") {
-        showMsg("請選擇要進行試算的股票", 'error', true);
-        return
-      }
-      const params = { tableType: 'table-single', stockNumbers: [dataContent.value] }
-      router.push({ name: "Result", state: { params: params }})
-    } else {
-      const params = { tableType: 'table-all' }
-      router.push({ name: "Result", state: { params: params }})
+    showLoading();
+    let params;
+    switch (event.target.id) {
+      case 'btn-single':
+        if (dataContent.value === "未選擇") {
+          showMsg("請選擇要進行試算的股票", 'error', true);
+          return
+        }
+        params = { tableType: 'table-single', stockNumbers: [dataContent.value] }
+        break
+      case 'btn-all':
+        params = { tableType: 'table-all' }
+        break
     }
-
+    router.push({ name: "Result", state: { params: params }})
   }
 
   function showMsg(msg, type, showClose=true) {

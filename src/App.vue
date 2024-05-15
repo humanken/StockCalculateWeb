@@ -86,4 +86,24 @@
 /* 向右滑離開 */
 .slide-right-leave-from { transform: translateX(0%); }
 .slide-right-leave-to { transform: translateX(100%); }
+
+/* Loading 畫面 */
+.el-loading-mask {
+  background-image: url("@/assets/image/Loading.gif");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.el-loading-spinner {
+  top: 20% !important;
+}
+
+.el-loading-spinner .circular {
+  display: none !important;
+}
+
+.el-loading-spinner .el-loading-text {
+  color: white !important;
+  font-size: 2rem !important;
+}
 </style>

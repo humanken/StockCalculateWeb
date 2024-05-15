@@ -3,9 +3,15 @@ import App from './App.vue'
 import router from "./router/index.js";
 import ElementPlus from "element-plus"
 import "element-plus/dist/index.css"
+import { startLoadingService, closeLoading } from "@/utils/loading.js";
 
 
-createApp(App)
+const app = createApp(App)
     .use(router)
     .use(ElementPlus)
-    .mount('#app')
+
+
+app.provide('$showLoading', startLoadingService)
+app.provide('$closeLoading', closeLoading)
+
+app.mount('#app')
