@@ -57,7 +57,8 @@
 </template>
 
 <script setup>
-import {onMounted, onUnmounted, reactive, readonly, ref} from "vue";
+
+  import { onMounted, onUnmounted, reactive } from "vue";
   import { zhTw } from "element-plus/es/locale/index";
   import { getCalculateResult, getQueryCalculateResult } from "@/server/calculate.js";
   import { getItem } from "@/server/localStorage.js";
@@ -70,29 +71,6 @@ import {onMounted, onUnmounted, reactive, readonly, ref} from "vue";
 
   const loadingEmit = defineEmits(['loadingEnd'])
 
-  onMounted(async function () {
-    if (props.type === 'table-single') {
-      state.data = await getSingleData()
-      state.dataInfo.length = state.data.length
-    }
-    else if (props.type === 'table-all') {
-      state.excludes = await getItem('excludes', [])
-      await getDataAndUpdateState();
-    }
-
-    // 更新分頁(pagination)排版
-    updateLayoutWithWidth();
-
-    // 觸發loading end，關閉Loading畫面
-    loadingEmit('loadingEnd', true)
-    // 緩加載
-    startLazyLoadingData(6000);
-    window.addEventListener('resize', updateLayoutWithWidth);
-  })
-
-  onUnmounted(() => {
-    window.removeEventListener('resize', updateLayoutWithWidth);
-  })
   // -------------------------------- State ---------------------------------------
   const state = reactive({
     pagination: {
@@ -114,6 +92,35 @@ import {onMounted, onUnmounted, reactive, readonly, ref} from "vue";
     copyData: []
   })
 
+  onMounted(async function () {
+
+    switch (props.type) {
+      case 'table-single':
+        state.data = await getSingleData()
+        state.dataInfo.length = state.data.length
+        break
+      case 'table-all':
+        state.excludes = await getItem('excludes', [])
+        await getDataAndUpdateState();
+        break
+      default:
+        throw new Error('[ResultTable.vue] Props.type is empty')
+    }
+
+    // 更新分頁(pagination)排版
+    updateLayoutWithWidth();
+
+    // 觸發loading end，關閉Loading畫面
+    loadingEmit('loadingEnd', true)
+    // 緩加載
+    startLazyLoadingData(7000);
+    window.addEventListener('resize', updateLayoutWithWidth);
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('resize', updateLayoutWithWidth);
+  })
+
   // -------------------------------- Data ----------------------------------------
   async function getSingleData() {
     const params = {
@@ -121,7 +128,7 @@ import {onMounted, onUnmounted, reactive, readonly, ref} from "vue";
       yieldStart: props.startYield,
       yieldEnd: props.endYield
     }
-    return await getCalculateResult(params)
+    return getCalculateResult(params)
   }
 
   async function getDataAndUpdateState(timer=undefined) {

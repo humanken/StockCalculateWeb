@@ -33,26 +33,14 @@
 
 <script setup>
 
+  import { onBeforeMount, onErrorCaptured, inject, ref } from "vue";
+  import { useRouter } from "vue-router";
   import Navbar from "@/components/Navbar.vue";
-  import { ref, onMounted, reactive } from "vue";
-  import { ElLoading } from "element-plus";
   import CardTableResult from "@/components/result/ResultTable.vue";
 
-  const tableType = ref(history.state.params.tableType)
-
-  const state = reactive({
-    loading: {
-      component: null,
-      text: '試算中',
-      timers: [undefined, undefined]
-    }
-  })
-
-  onMounted(() => {
-    startDynamicLoadingService('resultContainer')
-  })
-
-  // -------------------------------- Loading ----------------------------------------
+  const router = useRouter()
+  const closeLoading = inject('$closeLoading')
+  const tableType = ref('')
 
   onBeforeMount(() => {
     // 必須在掛載前，確認table type，否則CardTableResult無法得到值
@@ -65,52 +53,26 @@
     }
   })
 
-  function startImgTimer() {
-    return setInterval(() => {
-      // 添加隨機數，避免瀏覽器緩存
-      let gifPath = `/src/assets/image/Loading.gif?${Math.random()}`
-      state.loading.component.$el.style.backgroundImage = `url(${gifPath})`
-    }, 4000)
-  }
+  onErrorCaptured((err, instance, info) => {
+    console.log('error captured: ', err, instance, info)
+    closeLoading();
+    const e = { status: 'Error Mounted', detail: '網頁掛載失敗，請重新載入' }
+    router.replace({ name: 'Error', state: { params: e } });
+  })
 
-  function closeLoading() {
-    const closeTimer = setTimeout(() => {
-      state.loading.component.close();
-      state.loading.timers.forEach(clearInterval);
-      clearTimeout(closeTimer)
-    }, 4000)
-  }
 
   // TODO(新增功能： 取得更新日期和時間)
   // -------------------------------- Update ----------------------------------------
 
 </script>
 
-<style>
+<style scoped>
+
 .result-container {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.el-loading-mask {
-  background-image: url("@/assets/image/Loading.gif");
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.el-loading-spinner {
-  top: 20% !important;
-}
-
-.el-loading-spinner .circular {
-  display: none !important;
-}
-
-.el-loading-spinner .el-loading-text {
-  color: white !important;
-  font-size: 2rem !important;
 }
 
 </style>
