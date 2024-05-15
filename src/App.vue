@@ -23,7 +23,6 @@
     transition: { name: '', toLeft: 'slide-left', toRight: 'slide-right', none: '' }
   })
 
-  // TODO(檢查： 跳轉404頁面過渡是否正常)
   router.beforeEach((to, from) => {
     setTransitionName(to, from)
     // console.log('to: ', to)
