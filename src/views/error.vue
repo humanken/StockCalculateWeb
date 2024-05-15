@@ -17,9 +17,21 @@
 </template>
 
 <script setup>
-  import { ref } from "vue";
+  import { reactive, onBeforeMount } from "vue";
 
-  const error = ref(history.state.params)
+  const error = reactive({
+    status: 'Page Error',
+    detail: '此為錯誤頁面，未取得錯誤訊息'
+  })
+
+  onBeforeMount(() => {
+    if (history.state.hasOwnProperty('params')) {
+      error.status = history.state.params.status
+      error.detail = history.state.params.detail
+    }
+    history.replaceState(null, null, window.location.origin)
+  })
+
 </script>
 
 <style>

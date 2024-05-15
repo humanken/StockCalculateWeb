@@ -71,7 +71,7 @@
   onErrorCaptured((err, instance, info) => {
     console.log('error captured: ', err, instance, info)
     closeLoading();
-    const e = { status: 'Error Mounted', detail: '網頁掛載失敗，請重新載入' }
+    const e = { status: 'Mounted Error', detail: '網頁掛載失敗，請重新載入' }
     router.replace({ name: 'Error', state: { params: e } });
   })
 
