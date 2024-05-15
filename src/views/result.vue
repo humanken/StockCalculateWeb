@@ -21,36 +21,51 @@
           }
         ]"
         :updates-in-collapse="[
-            { id: 'updateDividend', text: '2024-04-xx' },
-            { id: 'updatePrice', text: '22:00' }
+          {
+            id: 'updateDividend',
+            text: '股利最後更新：' + state.update.dividend
+          },
+          {
+            id: 'updatePrice',
+            text: '收盤價最後更新：' + state.update.price
+          }
         ]"
     />
 
     <!-- 試算結果表格 -->
-    <CardTableResult :type="tableType" @loading-end="closeLoading" />
+    <CardTableResult :type="state.tableType" @loading-end="closeLoading" />
   </div>
 </template>
 
 <script setup>
 
-  import { onBeforeMount, onErrorCaptured, inject, ref } from "vue";
+  import { onBeforeMount, onErrorCaptured, inject, reactive, onMounted } from "vue";
   import { useRouter } from "vue-router";
   import Navbar from "@/components/Navbar.vue";
   import CardTableResult from "@/components/result/ResultTable.vue";
+  import { getFinalUpdateTime } from "@/server/other.js";
 
   const router = useRouter()
   const closeLoading = inject('$closeLoading')
-  const tableType = ref('')
+  const state = reactive({
+    tableType: '',
+    update: { price: '', dividend: '' }
+  })
 
   onBeforeMount(() => {
     // 必須在掛載前，確認table type，否則CardTableResult無法得到值
     if (history.state.hasOwnProperty('params')) {
-      tableType.value = history.state.params.tableType
+      state.tableType = history.state.params.tableType
     }
     else {
       router.replace({name: 'Home'})
       closeLoading();
     }
+  })
+
+  onMounted(async () => {
+    // 取得最後更新時間
+    state.update = await getFinalUpdateTime();
   })
 
   onErrorCaptured((err, instance, info) => {
@@ -59,10 +74,6 @@
     const e = { status: 'Error Mounted', detail: '網頁掛載失敗，請重新載入' }
     router.replace({ name: 'Error', state: { params: e } });
   })
-
-
-  // TODO(新增功能： 取得更新日期和時間)
-  // -------------------------------- Update ----------------------------------------
 
 </script>
 
