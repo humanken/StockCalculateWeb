@@ -144,11 +144,12 @@ nav.no-animate-bg {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-#a-logo:hover {
-  color: white;
-}
 #a-logo img {
   height: 1.5rem;
+}
+#a-logo:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  color: rgba(79,79,79,0.7);
 }
 
 .el-anchor {
@@ -157,6 +158,9 @@ nav.no-animate-bg {
 }
 .el-anchor :deep(.el-anchor__link) {
   font-size: 1rem;
+}
+.el-anchor :deep(.el-anchor__link:hover) {
+  color: black;
 }
 .el-anchor :deep(.el-anchor__link.is-active) {
   color: white;
