@@ -13,7 +13,7 @@
       <button
           class="navbar-toggler" type="button"
           data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
+          data-bs-target="#navbarCollapse"
           aria-controls="navbarNav"
           aria-expanded="false"
           aria-label="Toggle navigation"
@@ -22,7 +22,7 @@
           <span class="navbar-toggler-icon"></span>
       </button>
       <!-- 會被放入 navbar-toggler 的內容 -->
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="collapse navbar-collapse" id="navbarCollapse">
         <el-anchor :offset="10" :bound="250" :direction="state.anchor.direction" :marker="false" type="underline" class="navbar-nav me-auto mb-lg-0">
           <template v-for="item in contentsInCollapse">
             <el-anchor-link
@@ -104,7 +104,8 @@
   // -------------------------  Control Collapse Toggle -------------------------------
   function collapseToggle(event) {
     if (event.target.getAttribute('aria-expanded')) {
-      const collapseTarget = document.getElementById('navbarNav');
+      const targetID = event.target.getAttribute('data-bs-target')
+      const collapseTarget = document.querySelector(targetID);
       bootstrap.Collapse.getInstance(collapseTarget).hide();
     }
   }
