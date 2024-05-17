@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-sm"
+  <nav class="navbar navbar-expand-lg"
        :class="(fixedTop ? 'fixed-top' : '') + ' '+ (navbarUseAnimateBg ? 'animation-bg' : 'no-animate-bg')"
        id="idNav"
   >
@@ -10,7 +10,15 @@
           {{ brandText }}
       </a>
       <!-- 依照畫面大小，使用navbar-toggler-icon -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button
+          class="navbar-toggler" type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+          @blur="collapseToggle"
+      >
           <span class="navbar-toggler-icon"></span>
       </button>
       <!-- 會被放入 navbar-toggler 的內容 -->
@@ -32,7 +40,7 @@
               v-title="item.title ?? null"
               v-target="item.target ?? null"
             >
-              {{ item.text }}
+              ▶︎ {{ item.text }} ◀︎
             </el-anchor-link>
           </template>
         </el-anchor>
@@ -78,7 +86,7 @@
     state.anchor.mediaQueryList.addEventListener('change', mediaMatchForAnchor)
   })
 
-  // -------------------------------- v-blind ----------------------------------------
+  // ---------------------------- v-custom-directives ----------------------------------
   const vTitle = {
     mounted: (el, binding) => {
       if (!binding.value) { return }
@@ -90,6 +98,14 @@
     mounted: (el, binding) => {
       if (!binding.value) { return }
       el.firstChild.setAttribute('target', binding.value)
+    }
+  }
+
+  // -------------------------  Control Collapse Toggle -------------------------------
+  function collapseToggle(event) {
+    if (event.target.getAttribute('aria-expanded')) {
+      const collapseTarget = document.getElementById('navbarNav');
+      bootstrap.Collapse.getInstance(collapseTarget).hide();
     }
   }
 
@@ -154,15 +170,15 @@ nav.no-animate-bg {
 
 .el-anchor {
   background-color: revert;
-  --el-anchor-marker-bg-color: white;
+  --el-anchor-marker-bg-color: black;
 }
 .el-anchor :deep(.el-anchor__link) {
   font-size: 1rem;
 }
 .el-anchor :deep(.el-anchor__link:hover) {
-  color: black;
+  color: white;
 }
 .el-anchor :deep(.el-anchor__link.is-active) {
-  color: white;
+  color: black;
 }
 </style>
