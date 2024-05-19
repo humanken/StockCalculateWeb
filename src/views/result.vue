@@ -42,7 +42,7 @@
   import { onBeforeMount, onErrorCaptured, inject, reactive, onMounted } from "vue";
   import { useRouter } from "vue-router";
   import Navbar from "@/components/Navbar.vue";
-  import CardTableResult from "@/components/result/ResultTable.vue";
+  import CardTableResult from "@/components/result/CardResultTable.vue";
   import { getFinalUpdateTime } from "@/server/other.js";
 
   const router = useRouter()
