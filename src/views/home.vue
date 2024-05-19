@@ -23,13 +23,33 @@
     </section>
     <!-- 單筆股票 試算 區塊 -->
     <section :id="idSingleSection">
-      <CardForSingle />
+      <Card>
+        <template #title>單筆股票 試算</template>
+
+        <template #body>
+          <SelectStock v-model="stockNumberSelected" />
+        </template>
+
+        <template #footer>
+          <BtnCalculate btn-id="btn-single" :btn-content="stockNumberSelected" />
+        </template>
+      </Card>
     </section>
     <hr>
 
     <!-- 多筆股票 試算 區塊 -->
     <section :id="idAllSection">
-      <CardForAll />
+      <Card>
+        <template #title>多筆股票 試算</template>
+
+        <template #body>
+          <CarouselCategory />
+        </template>
+
+        <template #footer>
+          <BtnCalculate btn-id="btn-all" />
+        </template>
+      </Card>
     </section>
     <hr>
 
@@ -45,8 +65,12 @@
   import { onMounted, onUnmounted, ref } from "vue";
   import Navbar from "../components/Navbar.vue";
   import BtnHeaderSection from "../components/home/HeaderSectionBtn.vue";
-  import CardForSingle from "../components/home/single/card.vue"
-  import CardForAll from "../components/home/all/card.vue"
+  import Card from "../components/home/Card.vue"
+  import SelectStock from "@/components/home/SingleStockSelect.vue";
+  import BtnCalculate from "@/components/home/CalculateBtn.vue";
+  import CarouselCategory from "@/components/home/CategoryCarousel.vue";
+
+  const stockNumberSelected = ref();
 
 
   const idSingleSection = ref('single-stock-section')
