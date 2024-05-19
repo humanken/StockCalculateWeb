@@ -100,9 +100,6 @@
     data.otc.row = Math.floor(data.otc.cats.length / data.col) + 1
   }
 
-  function radioChange() {
-    isTwseChecked.value = !isTwseChecked.value
-  }
 </script>
 
 <style scoped>
