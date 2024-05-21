@@ -31,11 +31,6 @@ export const useCalculateServer = () => {
         return data
     }
 
-    const updateInfoDataState = (resp) => {
-        dataState.info.nextOffset = resp.nextOffset
-        dataState.info.limit = resp.limit
-    }
-
     const single = async (numbers) => {
         /**
          * params: numbers
@@ -72,7 +67,7 @@ export const useCalculateServer = () => {
         // 取得資料，去除沒有價格的資料
         dataState.data = [...dataState.data, ...delDataWithoutPrice(resp.data)];
         // 儲存回覆的資料
-        updateInfoDataState(resp);
+        dataState.info.nextOffset = resp.nextOffset;
         dataState.isDataReady = true
     }
 
@@ -91,7 +86,7 @@ export const useCalculateServer = () => {
             }
             // 必須等待上一個資料準備完成再取得新資料
             if (!dataState.isDataReady) { return }
-            await all(limit);
+            await all({ limit: limit, excludes: dataState.request.excludes });
         },
         milliSecond)
     }
@@ -110,6 +105,12 @@ export const readState = () => {
 }
 
 export const setState = () => {
+
+    const initData = () => {
+        dataState.info.nextOffset = 0;
+        dataState.data = []
+    }
+
     const openLazyLoading = () => { dataState.isLazyLoading = true; }
 
     const updateCurrentPage = (val) => { paginationState.currentPage = val; }
@@ -117,7 +118,7 @@ export const setState = () => {
     const updatePageSize = (val) => { paginationState.pageSize = val; }
 
     return {
-        dataState:  { openLazyLoading },
+        dataState:  { openLazyLoading, initData },
         paginationState: { updateCurrentPage, updatePageSize }
     }
 }

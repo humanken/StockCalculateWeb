@@ -46,13 +46,13 @@
 
 <script setup>
 
-  import { onBeforeMount, reactive, onMounted } from "vue";
+import {onBeforeMount, reactive, onMounted, onUnmounted} from "vue";
   import { useRouter } from "vue-router";
   import Navbar from "@/components/Navbar.vue";
   import Card from "@/components/result/Card.vue";
   import TableResult from "@/components/result/ResultTable.vue";
   import PaginationResult from "@/components/result/ResultPagination.vue";
-  import { useCalculateServer, readState } from "@/utils/calculate.js";
+import {useCalculateServer, readState, setState} from "@/utils/calculate.js";
   import { getFinalUpdateTime } from "@/server/other.js";
   import { useLoadingServer } from "@/utils/loading.js";
 
@@ -60,6 +60,7 @@
   const calculate = useCalculateServer();
   const loading = useLoadingServer();
   const { dataState } = readState();
+  const setDataState = setState().dataState;
   const state = reactive({
     update: { price: '', dividend: '' }
   })
@@ -83,6 +84,10 @@
 
       }
     }, 1000);
+  })
+
+  onUnmounted(() => {
+    setDataState.initData();
   })
 
 </script>
