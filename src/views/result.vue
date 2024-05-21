@@ -33,39 +33,51 @@
     />
 
     <!-- 試算結果表格 -->
-    <CardTableResult :type="state.tableType" @loading-end="closeLoading" />
+    <Card>
+      <template #body>
+        <TableResult></TableResult>
+      </template>
+      <template #footer>
+        <PaginationResult></PaginationResult>
+      </template>
+    </Card>
   </div>
 </template>
 
 <script setup>
 
-  import { onBeforeMount, onErrorCaptured, inject, reactive, onMounted } from "vue";
+  import { onErrorCaptured, inject, reactive, onMounted } from "vue";
   import { useRouter } from "vue-router";
   import Navbar from "@/components/Navbar.vue";
-  import CardTableResult from "@/components/result/CardResultTable.vue";
+  import Card from "@/components/result/Card.vue";
+  import TableResult from "@/components/result/ResultTable.vue";
+  import PaginationResult from "@/components/result/ResultPagination.vue";
+  import { useCalculateServer, readState } from "@/utils/calculate.js";
   import { getFinalUpdateTime } from "@/server/other.js";
 
-  const router = useRouter()
+  const router = useRouter();
+  const calculate = useCalculateServer();
+  const { dataState } = readState();
   const closeLoading = inject('$closeLoading')
   const state = reactive({
-    tableType: '',
     update: { price: '', dividend: '' }
-  })
-
-  onBeforeMount(() => {
-    // 必須在掛載前，確認table type，否則CardTableResult無法得到值
-    if (history.state.hasOwnProperty('params')) {
-      state.tableType = history.state.params.tableType
-    }
-    else {
-      router.replace({name: 'Home'})
-      closeLoading();
-    }
   })
 
   onMounted(async () => {
     // 取得最後更新時間
     state.update = await getFinalUpdateTime();
+
+    const waitingTimer = setInterval(() => {
+      if (dataState.isDataReady) {
+        closeLoading();
+        clearInterval(waitingTimer);
+
+        if (dataState.isLazyLoading) {
+          calculate.lazyLoading({ limit: 1000, milliSecond: 6000 });
+        }
+
+      }
+    }, 1000);
   })
 
   onErrorCaptured((err, instance, info) => {

@@ -25,6 +25,7 @@
   import { inject, ref } from "vue";
   import { useRouter } from "vue-router";
   import { ElMessage } from "element-plus";
+  import { useCalculateServer, setState } from "@/utils/calculate.js";
 
   const props = defineProps({
     btnId: {
@@ -36,27 +37,29 @@
     }
   })
 
-  const showLoading = inject('$showLoading')
+  const showLoading = inject('$showLoading');
+  const calculate = useCalculateServer();
+  const { dataState } = setState();
+  const router = useRouter();
 
   let dataContent = ref('');
 
-  const router = useRouter();
   function goToResult(event) {
     showLoading();
-    let params;
     switch (event.target.id) {
       case 'btn-single':
         if (dataContent.value === "未選擇") {
           showMsg("請選擇要進行試算的股票", 'error', true);
           return
         }
-        params = { tableType: 'table-single', stockNumbers: [dataContent.value] }
+        calculate.single([dataContent.value]);
         break
       case 'btn-all':
-        params = { tableType: 'table-all' }
+        calculate.all({ skip: 0, limit: 500 })
+        dataState.openLazyLoading();
         break
     }
-    router.push({ name: "Result", state: { params: params }})
+    router.push({ name: "Result" })
   }
 
   function showMsg(msg, type, showClose=true) {
