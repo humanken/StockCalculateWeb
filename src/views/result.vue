@@ -46,7 +46,7 @@
 
 <script setup>
 
-  import { onErrorCaptured, inject, reactive, onMounted } from "vue";
+  import { onBeforeMount, reactive, onMounted } from "vue";
   import { useRouter } from "vue-router";
   import Navbar from "@/components/Navbar.vue";
   import Card from "@/components/result/Card.vue";
@@ -54,13 +54,18 @@
   import PaginationResult from "@/components/result/ResultPagination.vue";
   import { useCalculateServer, readState } from "@/utils/calculate.js";
   import { getFinalUpdateTime } from "@/server/other.js";
+  import { useLoadingServer } from "@/utils/loading.js";
 
   const router = useRouter();
   const calculate = useCalculateServer();
+  const loading = useLoadingServer();
   const { dataState } = readState();
-  const closeLoading = inject('$closeLoading')
   const state = reactive({
     update: { price: '', dividend: '' }
+  })
+
+  onBeforeMount(() => {
+    if (!loading.isRunning()) { loading.start(); }
   })
 
   onMounted(async () => {
@@ -69,7 +74,7 @@
 
     const waitingTimer = setInterval(() => {
       if (dataState.isDataReady) {
-        closeLoading();
+        loading.close();
         clearInterval(waitingTimer);
 
         if (dataState.isLazyLoading) {
@@ -78,13 +83,6 @@
 
       }
     }, 1000);
-  })
-
-  onErrorCaptured((err, instance, info) => {
-    console.log('error captured: ', err, instance, info)
-    closeLoading();
-    const e = { status: 'Mounted Error', detail: '網頁掛載失敗，請重新載入' }
-    router.replace({ name: 'Error', state: { params: e } });
   })
 
 </script>

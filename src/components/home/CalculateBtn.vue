@@ -25,6 +25,7 @@
   import { inject, ref } from "vue";
   import { useRouter } from "vue-router";
   import { ElMessage } from "element-plus";
+  import { useLoadingServer } from "@/utils/loading.js";
   import { useCalculateServer, setState } from "@/utils/calculate.js";
 
   const props = defineProps({
@@ -37,7 +38,7 @@
     }
   })
 
-  const showLoading = inject('$showLoading');
+  const loading = useLoadingServer();
   const calculate = useCalculateServer();
   const { dataState } = setState();
   const router = useRouter();
@@ -45,7 +46,7 @@
   let dataContent = ref('');
 
   function goToResult(event) {
-    showLoading();
+    loading.start();
     switch (event.target.id) {
       case 'btn-single':
         if (dataContent.value === "未選擇") {
