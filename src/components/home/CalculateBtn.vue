@@ -24,7 +24,6 @@
 
   import { inject, ref } from "vue";
   import { useRouter } from "vue-router";
-  import { ElMessage } from "element-plus";
   import { useLoadingServer } from "@/utils/loading.js";
   import { useCalculateServer, setState } from "@/utils/calculate.js";
 
@@ -41,6 +40,7 @@
   const loading = useLoadingServer();
   const calculate = useCalculateServer();
   const { dataState } = setState();
+  const showMsg = inject('$showMsg');
   const router = useRouter();
 
   let dataContent = ref('');
@@ -61,15 +61,6 @@
         break
     }
     router.push({ name: "Result" })
-  }
-
-  function showMsg(msg, type, showClose=true) {
-    /**
-     * type: 'error', 'warning', 'success', 'info'
-     */
-    return ElMessage({
-      showClose: showClose, message: msg, type: type
-    })
   }
 
 </script>

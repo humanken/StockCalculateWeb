@@ -14,10 +14,12 @@
 </template>
 
 <script setup>
+
   import { RouterView, useRouter } from "vue-router";
-  import {onActivated, onMounted, reactive, ref} from "vue";
+  import { inject, reactive } from "vue";
 
   const router = useRouter();
+  const showMsg = inject('$showMsg');
 
   const state = reactive({
     transition: { name: '', toLeft: 'slide-left', toRight: 'slide-right', none: '' }
