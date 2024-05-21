@@ -24,6 +24,10 @@
   })
 
   router.beforeEach((to, from) => {
+    if (from.name !== 'Home' && to.name === 'Result') {
+      router.replace({name: 'Home'});
+      showMsg("無法直接前往試算結果頁面，已自動跳轉回首頁", 'error', true);
+    }
     setTransitionName(to, from)
     // console.log('to: ', to)
     // console.log('from: ', from)
