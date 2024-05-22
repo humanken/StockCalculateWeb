@@ -1,17 +1,21 @@
 <template>
-  <el-pagination
-    v-model:current-page="currentPage"
-    v-model:page-size="pageSize"
-    :total="dataState.info.length"
-    :page-sizes="paginationState.pageSizeList"
-    :layout="paginationState.layout"
-  ></el-pagination>
+  <!-- 切換為中文 -->
+  <el-config-provider :locale="zhTw">
+    <el-pagination
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      :total="dataState.info.length"
+      :page-sizes="paginationState.pageSizeList"
+      :layout="paginationState.layout"
+    ></el-pagination>
+  </el-config-provider>
 </template>
 
 <script setup>
 
-import {readState, setState} from "@/utils/calculate.js";
-  import {computed} from "vue";
+  import { zhTw } from "element-plus/es/locale/index";
+  import { readState, setState } from "@/utils/calculate.js";
+  import { computed } from "vue";
 
   const { dataState, paginationState } = readState();
   const setStateMethod = setState().paginationState;
