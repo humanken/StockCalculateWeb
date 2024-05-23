@@ -19,42 +19,42 @@
         <h1 class="header-title show-slide-down">Wellcome</h1>
         <p class="header-detail show-slide-down slide-delay-1">想知道股票的買賣點<br>點擊下列按鈕</p>
       </div>
-      <BtnHeaderSection :single-section-hash="idSingleSection" :all-section-hash="idAllSection"/>
+      <btn-scroll :single-section-hash="idSingleSection" :all-section-hash="idAllSection"/>
     </section>
     <!-- 單筆股票 試算 區塊 -->
     <section :id="idSingleSection">
-      <Card>
+      <card-home>
         <template #title>單筆股票 試算</template>
 
         <template #body>
-          <SelectStock v-model="stockNumberSelected" />
+          <select-stock v-model="stockNumberSelected" />
         </template>
 
         <template #footer>
-          <BtnCalculate btn-id="btn-single" :btn-content="stockNumberSelected" />
+          <btn-calculate btn-id="btn-single" :btn-content="stockNumberSelected" />
         </template>
-      </Card>
+      </card-home>
     </section>
     <hr>
 
     <!-- 多筆股票 試算 區塊 -->
     <section :id="idAllSection">
-      <Card>
+      <card-home>
         <template #title>多筆股票 試算</template>
 
         <template #body>
-          <CarouselCategory />
+          <carousel-category />
         </template>
 
         <template #footer>
-          <BtnCalculate btn-id="btn-all" />
+          <btn-calculate btn-id="btn-all" />
         </template>
-      </Card>
+      </card-home>
     </section>
     <hr>
 
     <section id="introduce">
-          <label>瞭解更多</label>
+      <label>瞭解更多</label>
     </section>
 
   </div>
@@ -63,12 +63,6 @@
 
 <script setup>
   import { onMounted, onUnmounted, ref } from "vue";
-  import Navbar from "../components/Navbar.vue";
-  import BtnHeaderSection from "../components/home/HeaderSectionBtn.vue";
-  import Card from "../components/home/Card.vue"
-  import SelectStock from "@/components/home/SingleStockSelect.vue";
-  import BtnCalculate from "@/components/home/CalculateBtn.vue";
-  import CarouselCategory from "@/components/home/CategoryCarousel.vue";
 
   const stockNumberSelected = ref();
 
