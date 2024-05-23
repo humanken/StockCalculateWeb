@@ -22,10 +22,11 @@
 
 <script setup>
 
-  import { inject, ref } from "vue";
+  import { ref } from "vue";
   import { useRouter } from "vue-router";
   import { useLoadingServer } from "@/utils/loading.js";
   import { useCalculateServer, setState } from "@/utils/calculate.js";
+  import { useMessage } from "@/utils/message.js";
 
   const props = defineProps({
     btnId: {
@@ -38,9 +39,9 @@
   })
 
   const loading = useLoadingServer();
+  const message = useMessage();
   const calculate = useCalculateServer();
   const { dataState } = setState();
-  const showMsg = inject('$showMsg');
   const router = useRouter();
 
   let dataContent = ref('');
@@ -50,7 +51,7 @@
     switch (event.target.id) {
       case 'btn-single':
         if (dataContent.value === "未選擇") {
-          showMsg("請選擇要進行試算的股票", 'error', true);
+          message.show("error", "請選擇要進行試算的股票");
           return
         }
         calculate.single([dataContent.value]);

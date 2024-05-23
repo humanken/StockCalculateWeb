@@ -16,10 +16,11 @@
 <script setup>
 
   import { RouterView, useRouter } from "vue-router";
-  import { inject, reactive } from "vue";
+  import { reactive } from "vue";
+  import { useMessage } from "@/utils/message.js";
 
   const router = useRouter();
-  const showMsg = inject('$showMsg');
+  const message = useMessage();
 
   const state = reactive({
     transition: { name: '', toLeft: 'slide-left', toRight: 'slide-right', none: '' }
@@ -28,7 +29,7 @@
   router.beforeEach((to, from) => {
     if (from.name !== 'Home' && to.name === 'Result') {
       router.replace({name: 'Home'});
-      showMsg("無法直接前往試算結果頁面，已自動跳轉回首頁", 'error', true);
+      message.show("error", "無法直接前往試算結果頁面，已自動跳轉回首頁");
     }
     setTransitionName(to, from)
     // console.log('to: ', to)
