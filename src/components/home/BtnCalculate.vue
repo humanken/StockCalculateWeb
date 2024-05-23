@@ -26,7 +26,7 @@
   import { useRouter } from "vue-router";
   import { useLoadingServer } from "@/utils/loading.js";
   import { useCalculateServer, setState } from "@/utils/calculate.js";
-  import { useMessage } from "@/utils/message.js";
+  import { useMessage } from "@/utils/message";
 
   const props = defineProps({
     btnId: {

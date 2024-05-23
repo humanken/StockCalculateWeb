@@ -17,7 +17,7 @@
 
   import { RouterView, useRouter } from "vue-router";
   import { reactive } from "vue";
-  import { useMessage } from "@/utils/message.js";
+  import { useMessage } from "@/utils/message";
 
   const router = useRouter();
   const message = useMessage();
