@@ -33,26 +33,22 @@
     />
 
     <!-- 試算結果表格 -->
-    <Card>
+    <card-result>
       <template #body>
-        <TableResult></TableResult>
+        <table-result />
       </template>
       <template #footer>
-        <PaginationResult></PaginationResult>
+        <pagination-result />
       </template>
-    </Card>
+    </card-result>
   </div>
 </template>
 
 <script setup>
 
-import {onBeforeMount, reactive, onMounted, onUnmounted} from "vue";
+  import { onBeforeMount, reactive, onMounted, onUnmounted } from "vue";
   import { useRouter } from "vue-router";
-  import Navbar from "@/components/Navbar.vue";
-  import Card from "@/components/result/Card.vue";
-  import TableResult from "@/components/result/ResultTable.vue";
-  import PaginationResult from "@/components/result/ResultPagination.vue";
-import {useCalculateServer, readState, setState} from "@/utils/calculate.js";
+  import { useCalculateServer, readState, setState } from "@/utils/calculate.js";
   import { getFinalUpdateTime } from "@/server/other.js";
   import { useLoadingServer } from "@/utils/loading.js";
 

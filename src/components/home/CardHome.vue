@@ -1,5 +1,9 @@
 <template>
-  <div class="card">
+  <div class="card border-warning">
+
+    <h2 class="card-header">
+      <slot name="title"></slot>
+    </h2>
 
     <div class="card-body">
       <slot name="body"></slot>
@@ -9,36 +13,28 @@
       <slot name="footer"></slot>
     </div>
 
-   </div>
+  </div>
 </template>
 
 <script>
 export default {
-  name: "Card"
+  name: "CardHome"
 }
 </script>
 
 <style scoped>
-
 .card {
   text-align: center;
-  position: absolute;
-  top: 78px;
   width: 90%;
-  max-height: 90vh;
 }
-
 .card .card-body {
-  min-height: 30vh;
-  height: 80vh;
+  min-height: 25vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
 }
-
 .card .card-footer {
-  padding: 0;
   background-color: transparent;
 }
 </style>

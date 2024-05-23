@@ -31,7 +31,7 @@
     @slide-change="isTwseChecked = !isTwseChecked"
   >
     <swiper-slide class="table-responsive">
-      <CategoryTable
+      <table-category
           type="twse"
           :col="data.col" :row="data.twse.row"
           :cat-list="data.twse.cats"
@@ -40,7 +40,7 @@
       />
     </swiper-slide>
     <swiper-slide class="table-responsive">
-      <CategoryTable
+      <table-category
           type="otc"
           :col="data.col" :row="data.otc.row"
           :cat-list="data.otc.cats"
@@ -55,7 +55,6 @@
 <script setup>
 
   import { onMounted, reactive, ref } from "vue";
-  import CategoryTable from "@/components/home/CategoryTable.vue";
   import { Swiper, SwiperSlide } from "swiper/vue";
   import { Navigation, Autoplay } from "swiper/modules";
   import "swiper/swiper-bundle.css"
