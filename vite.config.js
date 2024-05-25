@@ -1,6 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import Components from 'unplugin-vue-components/vite'
 
 // eslint-disable-next-line no-control-regex
 const INVALID_CHAR_REGEX = /[\x00-\x1F\x7F<>*#"{}|^[\]`;?:&=+$,]/g;
@@ -8,14 +9,19 @@ const DRIVE_LETTER_REGEX = /^[a-z]:/i;
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode}) => {
-  const env = loadEnv(mode, process.cwd(), '')
   return {
-    base: env.NODE_ENV === 'production' ? '/StockCalculateWeb/' : './',
+    base: mode === 'production' ? '/StockCalculateWeb/' : './',
     server: {
       port: 8000
     },
     plugins: [
-      vue()
+      vue(),
+      Components({
+        //掃描 組建路徑
+        dirs: ['src/components'],
+        // 配置文件 生成路徑
+        dts: 'src/components.d.ts'
+      })
     ],
     resolve: {
       alias: {
