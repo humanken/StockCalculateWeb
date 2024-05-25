@@ -81,14 +81,16 @@
   })
 
   onMounted(() => {
-    state.anchor.mql = mediaQuery.create(getQueryConditions())
+    // 建立媒體查詢
+    state.anchor.mql = mediaQuery.create(getQueryConditions());
 
-    // 新增anchor媒體配對 監聽，fnFirst：是否先執行
+    // 新增anchor媒體查詢監聽，fnFirst：是否先執行
     mediaQuery.startListener(state.anchor.mql, mediaMatchForAnchor, true);
   })
 
   onUnmounted(() => {
-    mediaQuery.removeListener(state.anchor.mql, mediaMatchForAnchor)
+    mediaQuery.removeListener(state.anchor.mql, mediaMatchForAnchor);
+    state.anchor.mql = null;
   })
 
   // ---------------------------- v-custom-directives ----------------------------------
@@ -145,17 +147,12 @@
     return matchString
   }
   
-  function mediaMatchForAnchor() {
+  function mediaMatchForAnchor(event) {
     /**
      * 符合條件 -> anchor 排列為橫向，
      * 否則 -> anchor 排列為直向
      */
-    if (state.anchor.mql.matches) {
-      state.anchor.direction = 'horizontal'
-    }
-    else {
-      state.anchor.direction = 'vertical'
-    }
+    state.anchor.direction = (event.matches) ? 'horizontal' : 'vertical'
   }
 
 </script>

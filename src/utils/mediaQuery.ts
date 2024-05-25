@@ -10,13 +10,21 @@ export const useMediaQuery = () => {
 
     const startListener = (
         mediaQueryLists: MediaQueryList | MediaQueryList[],
-        fn: () => void,
+        fn: (event: MediaQueryListEvent) => void,
         fnFirst = true
     ) => {
-        if (fnFirst) { fn(); }
-        return Array.isArray(mediaQueryLists)
-            ? mediaQueryLists.map(mql => mql.addEventListener('change', fn))
-            : mediaQueryLists.addEventListener('change', fn)
+        const executeFn = (mql: MediaQueryList) => {
+            const fakeEvent = { matches: mql.matches, media: mql.media } as MediaQueryListEvent
+            fn(fakeEvent);
+        }
+        if (Array.isArray(mediaQueryLists)) {
+            if (fnFirst) { mediaQueryLists.forEach(mql => executeFn(mql)); }
+            return mediaQueryLists.map(mql => mql.addEventListener('change', fn))
+        }
+        else {
+            if (fnFirst) { executeFn(mediaQueryLists); }
+            return mediaQueryLists.addEventListener('change', fn)
+        }
     }
 
     const removeListener = (

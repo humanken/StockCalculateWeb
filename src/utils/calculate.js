@@ -117,9 +117,11 @@ export const setState = () => {
 
     const updatePageSize = (val) => { paginationState.pageSize = val; }
 
+    const updateLayout = (val) => { paginationState.layout = val; }
+
     return {
         dataState:  { openLazyLoading, initData },
-        paginationState: { updateCurrentPage, updatePageSize }
+        paginationState: { updateCurrentPage, updatePageSize, updateLayout }
     }
 }
 
