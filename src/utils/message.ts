@@ -1,4 +1,5 @@
-declare const ElMessage: typeof import('element-plus')['ElMessage']
+// @ts-ignore
+import { ElMessage } from "element-plus";
 
 
 export const useMessage = () => {
