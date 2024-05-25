@@ -60,7 +60,8 @@
 
 <script setup>
 
-  import { onMounted, reactive } from "vue";
+  import { onMounted, onUnmounted, reactive } from "vue";
+  import { useMediaQuery } from "@/utils/mediaQuery";
 
   const props = defineProps({
     fixedTop: { required: false },
@@ -70,20 +71,24 @@
     updatesInCollapse: { required: false, default: [] }
   })
 
+  const mediaQuery = useMediaQuery();
+
   const state = reactive({
     anchor: {
       direction: 'horizontal',
-      mediaQueryList: typeof MediaQueryList
+      mql: null
     }
   })
 
   onMounted(() => {
-    state.anchor.mediaQueryList = getAnchorMediaQueryList()
-    // 必須先執行配對，監聽是之後畫面更動才執行
-    mediaMatchForAnchor();
+    state.anchor.mql = mediaQuery.create(getQueryConditions())
 
-    // 新增anchor媒體配對 監聽
-    state.anchor.mediaQueryList.addEventListener('change', mediaMatchForAnchor)
+    // 新增anchor媒體配對 監聽，fnFirst：是否先執行
+    mediaQuery.startListener(state.anchor.mql, mediaMatchForAnchor, true);
+  })
+
+  onUnmounted(() => {
+    mediaQuery.removeListener(state.anchor.mql, mediaMatchForAnchor)
   })
 
   // ---------------------------- v-custom-directives ----------------------------------
@@ -112,7 +117,7 @@
 
   // ---------------------------- Anchor Media Match ----------------------------------
 
-  function getAnchorMediaQueryList() {
+  function getQueryConditions() {
     /**
      * 根據 navbar 的 className，
      * 取得 視窗的最小寬度 條件
@@ -137,7 +142,7 @@
         matchString = ''
         break
     }
-    return window.matchMedia(matchString)
+    return matchString
   }
   
   function mediaMatchForAnchor() {
@@ -145,7 +150,7 @@
      * 符合條件 -> anchor 排列為橫向，
      * 否則 -> anchor 排列為直向
      */
-    if (state.anchor.mediaQueryList.matches) {
+    if (state.anchor.mql.matches) {
       state.anchor.direction = 'horizontal'
     }
     else {
