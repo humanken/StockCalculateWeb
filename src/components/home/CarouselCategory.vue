@@ -54,19 +54,27 @@
 
 <script setup>
 
-  import { onMounted, reactive, ref } from "vue";
+  import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
   import { Swiper, SwiperSlide } from "swiper/vue";
   import { Navigation, Autoplay } from "swiper/modules";
   import "swiper/swiper-bundle.css"
   import { getItem, setItem } from "@/server/localStorage.js";
   import { getCategoryList } from "@/server/stock.js";
+  import { useMediaQuery } from "@/utils/mediaQuery";
 
   let swiperInstance = ref('');
   let isTwseChecked = ref(true);
 
   const data = reactive({
-    'twse': {'row': 0, 'cats': []}, 'otc': {'row': 0, 'cats': []},
-    'col': 5, 'excludes': []
+    twse: {
+      cats: [],
+      row: computed(() => Math.floor(data.twse.cats.length / data.col) + 1)
+    },
+    otc: {
+      cats: [],
+      row: computed(() => Math.floor(data.otc.cats.length / data.col) + 1)
+    },
+    col: 5, excludes: []
   })
 
   onMounted(async () => {
@@ -75,10 +83,24 @@
     data.twse.cats = await getCategoryList(true, false);
     data.otc.cats = await getCategoryList(false, true);
 
-    dynamicChangeRowCol();
-    window.addEventListener('resize', dynamicChangeRowCol)
+    // 建立媒體查詢
+    mediaQueryLists = mediaQuery.create(Object.keys(MEDIA_QUERY_COLUMN_CONDITIONS));
+
+    // 新增Column媒體查詢監聽，fnFirst：是否先執行
+    mediaQuery.startListener(mediaQueryLists, mediaMatchChangeColumn, true);
   })
 
+  onUnmounted(() => {
+    mediaQuery.removeListener(mediaQueryLists, mediaMatchChangeColumn);
+  })
+
+  /**
+   * 判斷 Local Storage 的 excludes 是否存在 sector_id。
+   * 存在 -> 從 excludes 陣列中 刪除此 sector_id;
+   * 不存在 -> 新增 sector_id 到 excludes 陣列
+   * 儲存進 Local Storage
+   * @param sector_id
+   */
   function handleCheckboxClick(sector_id) {
     const index = data.excludes.indexOf(sector_id)
     if (index !== -1) {
@@ -89,14 +111,21 @@
     setItem('excludes', data.excludes)
   }
 
-  function dynamicChangeRowCol() {
-    const width = window.innerWidth;
-    if (width <= 600) { data.col = 2 }
-    else if (600 < width && width <= 700) { data.col = 3 }
-    else if (700 < width && width <= 800) { data.col = 4 }
-    else { data.col = 5 }
-    data.twse.row = Math.floor(data.twse.cats.length / data.col) + 1
-    data.otc.row = Math.floor(data.otc.cats.length / data.col) + 1
+  // ----------------------- Column Media Match ------------------------------
+
+  let mediaQueryLists = [];
+  const mediaQuery = useMediaQuery();
+  const MEDIA_QUERY_COLUMN_CONDITIONS = {
+    '(max-width: 600px)': 2,
+    '(min-width: 601px) and (max-width: 700px)': 3,
+    '(min-width: 701px) and (max-width: 800px)': 4,
+    '(min-width: 801px)': 5
+  }
+
+  function mediaMatchChangeColumn(event) {
+    if (event.matches) {
+      data.col = MEDIA_QUERY_COLUMN_CONDITIONS[event.media]
+    }
   }
 
 </script>
