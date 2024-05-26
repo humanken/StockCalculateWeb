@@ -7,7 +7,9 @@
       placeholder="請輸入或選擇股票"
       v-model="selected"
       @focus="selected = ''"
-      @keyup.enter="(event) => {selectFirstMatchOption(); event.target.blur()}"
+      @compositionstart="isTyping = true"
+      @compositionend="isTyping = false"
+      @keyup.enter="selectFirstMatchOption"
       @blur="selected === '' ? selected = null : selected"
   >
   <datalist id="SelectStock">
@@ -22,38 +24,36 @@
 </template>
 
 <script setup>
-  import { onMounted, reactive } from "vue";
+
+  import { onMounted, ref } from "vue";
   import { getStockList } from "@/server/stock.js";
 
-  const selected = defineModel()
-  let stocks = reactive([])
+  const selected = defineModel('selected')
+  let isTyping = ref(false);
+  let stocks = ref([])
 
   onMounted(async () => {
-      let nextOffset = 0;
-      const limit = 1000;
-      while (true) {
-        const data = await getStockList({'skip': nextOffset, 'limit': limit})
-        if (!data.length) { break }
-        stocks.push(...data)
-        nextOffset += limit;
-      }
+    stocks.value = await getStockList({'skip': 0, 'limit': 5000})
   })
 
   /* 選擇 匹配第一選項 */
-  const selectFirstMatchOption = function () {
-      // 所有 option 的 value
-      let options = Array.from($(`#SelectStock option`)).map(function(el){return el.value;});
+  const selectFirstMatchOption = function (event) {
+    // 中文模式還在輸入中，不用判斷
+    if (isTyping.value) { return }
 
-      // 配對與輸入框相近的數據
-      let relevantOptions = options.filter(function(option){
-          return option.toLowerCase().includes(selected.value.toLowerCase());
-      }); // filtering the data list based on input query
-      if(relevantOptions.length > 0){
-          // 如果配對完全相同，則不設定輸入框
-          if (relevantOptions[0] === selected.value ) { return }
-          // 輸入框 設定為 配對數據第一項的值
-          selected.value = relevantOptions[0]
-      }
+    // 所有 option 的 value
+    let options = Array.from(document.querySelectorAll('#SelectStock option')).map(el => el.value);
+
+    // 配對與輸入框相近的數據
+    let relevantOptions = options.filter(opt => opt.includes(selected.value));
+
+    if (relevantOptions.length > 0) {
+        // 如果配對完全相同，則不設定輸入框
+        if (relevantOptions[0] === selected.value ) { return }
+        // 輸入框 設定為 配對數據第一項的值
+        selected.value = relevantOptions[0]
+    }
+    event.target.blur();
   }
 
 

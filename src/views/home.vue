@@ -27,7 +27,7 @@
         <template #title>單筆股票 試算</template>
 
         <template #body>
-          <select-stock v-model="stockNumberSelected" />
+          <select-stock v-model:selected="stockNumberSelected" />
         </template>
 
         <template #footer>
