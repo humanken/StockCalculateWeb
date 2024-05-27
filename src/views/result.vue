@@ -47,6 +47,8 @@
 <script setup>
 
   import { onBeforeMount, reactive, onMounted, onUnmounted } from "vue";
+  import Navbar from "@/components/Navbar.vue";
+  import { CardResult, TableResult, PaginationResult } from "@/components/result/index.js";
   import { useRouter } from "vue-router";
   import { useCalculateServer, readState, setState } from "@/utils/calculate.js";
   import { getFinalUpdateTime } from "@/server/other.js";

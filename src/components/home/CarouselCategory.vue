@@ -55,6 +55,7 @@
 <script setup>
 
   import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
+  import { TableCategory } from "@/components/home/index";
   import { Swiper, SwiperSlide } from "swiper/vue";
   import { Navigation, Autoplay } from "swiper/modules";
   import "swiper/swiper-bundle.css"

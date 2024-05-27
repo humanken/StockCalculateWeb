@@ -62,7 +62,10 @@
 
 
 <script setup>
+
   import { onMounted, onUnmounted, ref } from "vue";
+  import { BtnCalculate, BtnScroll, CardHome, SelectStock, CarouselCategory } from "@/components/home/index";
+  import Navbar from "@/components/Navbar.vue";
 
   const stockNumberSelected = ref();
 

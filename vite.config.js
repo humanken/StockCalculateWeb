@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import Components from 'unplugin-vue-components/vite'
+import cdn from 'vite-plugin-cdn-import'
 
 // eslint-disable-next-line no-control-regex
 const INVALID_CHAR_REGEX = /[\x00-\x1F\x7F<>*#"{}|^[\]`;?:&=+$,]/g;
@@ -16,11 +16,30 @@ export default defineConfig(({ command, mode}) => {
     },
     plugins: [
       vue(),
-      Components({
-        //掃描 組建路徑
-        dirs: ['src/components'],
-        // 配置文件 生成路徑
-        dts: 'src/components.d.ts'
+      cdn({
+        prodUrl: 'https://unpkg.com/{name}@{path}',
+        modules: [
+          {
+            name: 'vue',
+            var: 'Vue',
+            path: '3.4.21'
+          },
+          {
+            name: 'vant',
+            var: 'Vant',
+            path: '4.9.0'
+          },
+          {
+            name: 'vue-router',
+            var: 'VueRouter',
+            path: '4.3.2'
+          },
+          {
+            name: 'element-plus',
+            var: 'ElementPlus',
+            path: '2.7.2'
+          }
+        ]
       })
     ],
     resolve: {
@@ -29,6 +48,7 @@ export default defineConfig(({ command, mode}) => {
       }
     },
     build: {
+      sourcemap: true,
       rollupOptions: {
         output: {
           // https://github.com/rollup/rollup/blob/master/src/utils/sanitizeFileName.ts
