@@ -47,16 +47,17 @@
   let dataContent = ref('');
 
   function goToResult(event) {
-    loading.start();
     switch (event.target.id) {
       case 'btn-single':
         if (dataContent.value === "未選擇") {
           message.show("error", "請選擇要進行試算的股票");
           return
         }
+        loading.show();
         calculate.single([dataContent.value]);
         break
       case 'btn-all':
+        loading.show();
         calculate.all({ skip: 0, limit: 500 })
         dataState.openLazyLoading();
         break

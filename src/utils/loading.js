@@ -29,7 +29,7 @@ export const useLoadingServer = () => {
         }, 4000)
     }
 
-    const start = () => {
+    const show = () => {
         if (state.component && state.isRunning) { return }
         state.component = ElLoading.service({
             lock: true,
@@ -54,7 +54,7 @@ export const useLoadingServer = () => {
     const isRunning = () => { return state.isRunning; }
 
     return {
-        start,
+        show,
         close,
         isRunning
     }

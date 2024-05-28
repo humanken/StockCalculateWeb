@@ -64,7 +64,7 @@
   })
 
   onBeforeMount(() => {
-    if (!loading.isRunning()) { loading.start(); }
+    if (!loading.isRunning()) { loading.show(); }
   })
 
   onMounted(async () => {
