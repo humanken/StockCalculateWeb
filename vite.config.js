@@ -9,19 +9,21 @@ const DRIVE_LETTER_REGEX = /^[a-z]:/i;
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode}) => {
-  const env = loadEnv(mode, process.cwd(), '')
+  const env = loadEnv(mode, process.cwd(), '');
+  const serverSetting = {
+    host: env.VITE_SERVER_HOST,
+    port: env.VITE_SERVER_PORT,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true
+      }
+    }
+  }
   return {
     base: env.VITE_WEB_BASE_URL,
-    server: {
-      host: env.VITE_SERVER_HOST,
-      port: env.VITE_SERVER_PORT,
-      proxy: {
-        '/api': {
-          target: 'http://127.0.0.1:8000',
-          changeOrigin: true
-        }
-      }
-    },
+    server: serverSetting,
+    preview: serverSetting,
     plugins: [
       vue(),
       cdn({
