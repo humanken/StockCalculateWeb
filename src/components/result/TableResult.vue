@@ -57,7 +57,7 @@
 
     // 不排序，使用只讀屬性的資料恢復原本順序
     if (!sortType) {
-      state.data = dataState.data
+      state.data = JSON.parse(JSON.stringify(dataState.data))
       return
     }
 
