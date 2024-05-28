@@ -1,0 +1,38 @@
+# .github/workflows/deploy.yml
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build project
+        run: npm install && npm run build
+
+      - name: Switch to deploy branch
+        run: git checkout -b deploy
+
+      - name: Clear existing files but keep dist, Dockerfile, and nginx.conf
+        run: |
+          shopt -s extglob
+          rm -rf !("dist"|"Dockerfile"|"nginx.conf"|".git")
+          rm -rf .github .vscode .env.development .env.production .gitignore
+
+      - name: Commit and push to deploy branch
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        run: |
+          ls -l
+          git config --global user.name 'humanken'
+          git config --global user.email '3hotpeper@gmail.com'
+          git add .
+          git commit -m "$(date '+%Y-%m-%d %H:%M:%S')"
+          git push origin deploy --force
