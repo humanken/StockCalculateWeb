@@ -1,9 +1,7 @@
 import axios from "axios";
 import router from "@/router/index.js";
 
-// console.log('import.meta.env: ', import.meta.env)
-
-axios.defaults.baseURL = import.meta.env.MODE === "development" ? 'http://127.0.0.1:8000': '/api'
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL
 axios.defaults.headers = {
     'X-Requested-With': 'XMLHttpRequest'
 }
