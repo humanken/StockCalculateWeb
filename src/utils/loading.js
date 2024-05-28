@@ -1,5 +1,6 @@
-import { reactive } from "vue";
+import {reactive, ref} from "vue";
 import { ElLoading } from "element-plus";
+import loadingGif from "../assets/image/Loading.gif"
 
 const state = reactive({
     isRunning: false,
@@ -24,8 +25,7 @@ export const useLoadingServer = () => {
     const startImgTimer = () => {
         return setInterval(() => {
             // 添加隨機數，避免瀏覽器緩存
-            let gifPath = `/src/assets/image/Loading.gif?${Math.random()}`
-            state.component.$el.style.backgroundImage = `url(${gifPath})`
+            state.component.$el.style.backgroundImage = `url(${loadingGif}?${Math.random()})`
         }, 4000)
     }
 
