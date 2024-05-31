@@ -5,7 +5,7 @@
   >
     <div class="container-fluid">
       <!-- Logo -->
-      <a class="navbar-brand btn text-center" href="/" id="a-logo">
+      <a class="navbar-brand btn text-center" :href="logoHref" id="a-logo">
           <img src="@/assets/icon/Logo.png" alt="Logo">
           {{ brandText }}
       </a>
@@ -71,6 +71,7 @@
     updatesInCollapse: { required: false, default: [] }
   })
 
+  const logoHref = import.meta.env.VITE_NAVBAR_HREF;
   const mediaQuery = useMediaQuery();
 
   const state = reactive({
