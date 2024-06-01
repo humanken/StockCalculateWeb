@@ -30,7 +30,7 @@ const  router = createRouter({
         if (to.name === "Home" ) {
             return new Promise(resolve => {
                 setTimeout(() => {
-                    resolve({ el: to.hash})
+                    resolve({ el: to.hash, top: 35 })
                 }, 1200)
             })
         }

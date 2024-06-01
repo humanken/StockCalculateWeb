@@ -23,7 +23,7 @@
       </button>
       <!-- 會被放入 navbar-toggler 的內容 -->
       <div class="collapse navbar-collapse" id="navbarCollapse">
-        <el-anchor :offset="10" :bound="250" :direction="state.anchor.direction" :marker="false" type="underline" class="navbar-nav me-auto mb-lg-0">
+        <el-anchor :offset="35" :bound="250" :direction="state.anchor.direction" :marker="false" type="underline" class="navbar-nav me-auto mb-lg-0">
           <template v-for="item in contentsInCollapse">
             <el-anchor-link
               v-if="item.isBack"
