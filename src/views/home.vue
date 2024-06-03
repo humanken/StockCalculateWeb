@@ -32,6 +32,8 @@
 
         <template #footer>
           <btn-calculate btn-id="btn-single" :btn-content="stockNumberSelected" />
+          <br>
+          <span class="text-secondary">審慎投資，自負風險</span>
         </template>
       </card-home>
     </section>
@@ -48,13 +50,29 @@
 
         <template #footer>
           <btn-calculate btn-id="btn-all" />
+          <br>
+          <span class="text-secondary">審慎投資，自負風險</span>
         </template>
       </card-home>
     </section>
     <hr>
 
     <section id="introduce">
-      <label>瞭解更多</label>
+      <card-home>
+        <template #title>瞭解更多</template>
+        <template #body>
+          <tab-introduce></tab-introduce>
+        </template>
+        <template #footer>
+          <span class="text-danger">
+            本網站所有資料僅供參考，投資人應該獨立判斷，如使用者依本資料交易發生交易損失需自行負責。
+          </span>
+          <br>
+          <span class="text-secondary">
+            Copyright &copy; 2024 (Chun-Chiech) or (HSIN-HAO), TSAI
+          </span>
+        </template>
+      </card-home>
     </section>
 
   </div>
@@ -64,7 +82,7 @@
 <script setup>
 
   import { onMounted, onUnmounted, ref } from "vue";
-  import { BtnCalculate, BtnScroll, CardHome, SelectStock, CarouselCategory } from "@/components/home/index";
+  import { BtnCalculate, BtnScroll, CardHome, SelectStock, CarouselCategory, TabIntroduce } from "@/components/home/index";
   import Navbar from "@/components/Navbar.vue";
 
   const stockNumberSelected = ref();
