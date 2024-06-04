@@ -6,7 +6,7 @@
     <div class="container-fluid">
       <!-- Logo -->
       <a class="navbar-brand btn text-center" :href="logoHref" id="a-logo">
-          <img src="@/assets/icon/Logo.png" alt="Logo">
+          <img src="/logo.png" alt="Logo">
           {{ brandText }}
       </a>
       <!-- 依照畫面大小，使用navbar-toggler-icon -->
