@@ -20,10 +20,10 @@ jobs:
       - name: Switch to deploy branch
         run: git checkout -b deploy
 
-      - name: Clear existing files but keep dist, Dockerfile, and nginx.conf
+      - name: Clear existing files but keep dist, Dockerfile, nginx.conf and README.md
         run: |
           shopt -s extglob
-          rm -rf !("dist"|"Dockerfile"|"nginx.conf"|".git")
+          rm -rf !("dist"|"Dockerfile"|"nginx.conf"|".git"|"README.md")
           rm -rf .github .vscode .env.development .env.production .gitignore
 
       - name: Commit and push to deploy branch
