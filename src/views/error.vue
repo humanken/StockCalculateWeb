@@ -18,6 +18,9 @@
 
 <script setup>
   import { reactive, onBeforeMount } from "vue";
+  import { useLoadingServer } from "@/utils/loading.js";
+
+  const loading = useLoadingServer();
 
   const error = reactive({
     status: 'Page Error',
@@ -25,6 +28,8 @@
   })
 
   onBeforeMount(() => {
+    if (loading.isRunning()) { loading.close(); }
+
     if (history.state.hasOwnProperty('params')) {
       error.status = history.state.params.status
       error.detail = history.state.params.detail
