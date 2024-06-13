@@ -14,20 +14,25 @@ axios.interceptors.response.use(resp => {
     if (resp.status !== 200) { return Promise.reject(resp) }
     return resp.data
 }, error => {
-    const status = [404, 500]
-    if (error.hasOwnProperty('response') && status.includes(error.response.status)) {
-        const e = { status: error.response.status, detail: error.response.data.detail }
-        router.push({ name: 'Error', state: { params : e }})
+    if (!error.hasOwnProperty('response')) {
+        goNetworkErrorView(error);
     }
-    else if (!error.hasOwnProperty('response')) {
-        const e = { status: error.message, detail: '網路異常，請檢查網路連線或稍後再試' }
-        router.push({ name: 'Error', state: { params : e }})
+    else {
+        goResponseErrorView(error);
     }
-    else if (!status.includes(error.response.status)) {
-        return Promise.reject(error)
-    }
-
+    return Promise.reject(error)
 })
 
 
 export default axios
+
+
+function goNetworkErrorView(error) {
+    const e = { status: error.message, detail: '網路異常，請檢查網路連線或稍後再試' }
+    router.push({ name: 'Error', state: { params : e }})
+}
+
+function goResponseErrorView(error) {
+    const e = { status: error.response.status, detail: error.response.data.detail }
+    router.push({ name: 'Error', state: { params : e }})
+}

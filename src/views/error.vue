@@ -31,11 +31,17 @@
     if (loading.isRunning()) { loading.close(); }
 
     if (history.state.hasOwnProperty('params')) {
-      error.status = history.state.params.status
-      error.detail = history.state.params.detail
+      const { status, detail } = history.state.params;
+      if (status) { error.status = status }
+      if (detail) { error.detail = detail }
     }
-    history.replaceState(null, null, window.location.origin)
+    urlClear();
   })
+
+  function urlClear() {
+    const url = import.meta.env.PROD ? `${window.location.origin}/web/` : `${window.location.origin}/`
+    history.replaceState(null, null, url)
+  }
 
 </script>
 
