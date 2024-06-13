@@ -8,6 +8,9 @@
   />
 </div>
 
+### 前往試算網頁：https://calculate.hotpeperken.com/web/
+
+---
 ## 分支
 1. master ( 開發模式 )
 2. deploy ( 已構建，使用指令可以直接[部署](#如何部署)在Docker )
@@ -102,22 +105,26 @@
 
 ### 1. Clone deploy 分支
 ```shell
-git clone -b deploy https://github.com/humanken/StockCalculateWeb.git
+git clone -b deploy https://github.com/humanken/StockCalculateWeb.git <direction-name>
 ```
 
 ### 2. 進入專案目錄
 ```shell
 cd StockCalculateWeb
 ```
+或是
+```shell
+cd <direction-name>
+```
 
 ### 3. 建立 Docker 映像
 ```shell
-docker build -t stock-calculate-frontend .
+docker build -t <image-name> .
 ```
 
 ### 4. 運行 Docker 容器
 ```shell
-docker run -d -p 8317:8317 --name StockCalculateWeb stock-calculate-frontend
+docker run -d -p 8317:8317 --name <container-name> <image-name>
 ``` 
 
 > 查看 Docker 存在的容器
